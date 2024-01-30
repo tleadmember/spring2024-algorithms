@@ -15,6 +15,7 @@ with open(sys.argv[1], 'r') as my_file:
 
     input = my_file.readline().strip()
     cptn_start,lucky_start = map(int, input.split())
+    source_node = (cptn_start,lucky_start)
 
     corr_starts = []
     corr_ends = []
@@ -53,7 +54,7 @@ for i in range(n):
 
 
 """ 
-Create all edges 
+Create edges based on game corridors
 """
 for k in range(m):
     for j in range(n-1): # n-1 because last room (goal room) has no color
@@ -61,6 +62,17 @@ for k in range(m):
             # add 2 edges on model graph
             G.add_edge((corr_starts[k],j+1) , (corr_ends[k],j+1))
             G.add_edge((j+1,corr_starts[k]) , (j+1,corr_ends[k]))
+
+
+"""
+Create edges from each potential winning state to a common goal node
+"""
+goal_node = (-1,-1) # (-1,-1) is used as the goal node
+G.add_node(goal_node) 
+for j in range(n-1):
+    G.add_edge((goal_room,j+1) , goal_node)
+    G.add_edge((j+1,goal_room) , goal_node)
+
 
 # print(list(G.edges))
 # print("Total # nodes:", G.number_of_nodes())
@@ -80,10 +92,20 @@ Plot
 # plt.show()
 
 
+# nx.draw(G, with_labels=True, font_weight='bold')
+# plt.show()
+
+
 """
 Run algorithms
 """
+try:
+    paths = nx.all_shortest_paths(G, source=source_node, target=goal_node, weight=None, method='dijkstra')
+except nx.NetworkXNoPath:
+    print("No path")
 
+for p in paths:
+    print(p)
 
 
 
