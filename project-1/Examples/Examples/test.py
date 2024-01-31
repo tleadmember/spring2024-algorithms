@@ -97,54 +97,41 @@ Plot
 
 
 """
-Run algorithms
+Run traverse algorithm
 """
 try:
     paths = nx.all_shortest_paths(G, source=source_node, target=goal_node, weight=None, method='dijkstra')
+    """ Translate graph shortest paths to game paths"""
+    translated_paths = ""
+
+    for p in paths:
+        translated_p = ""
+        for i in range(len(p)-2):
+            if p[i][0] == p[i+1][0]:    # Captain didn't move. Lucky moved
+                translated_p += "L" + str(p[i+1][1])
+            else:                       # Captain moved
+                translated_p += "R" + str(p[i+1][0])
+        translated_paths += " " + translated_p
+
+    """ Find the lexicographically first path """
+    split_paths = translated_paths.split()
+    split_paths.sort()
+    print(split_paths[0])
+
+    # for i in split_paths:
+    #     print(i)
+
+    # f = open("4-lex_out.txt", "r")
+    # print(f.read())
+    # if f.read() == split_paths[0]:
+    #     print("pass")
+    # else:
+    #     print("FAIL")
+
 except nx.NetworkXNoPath:
-    print("No path")
-
-for p in paths:
-    print(p)
-
-
-
-
-
-# input = lambda: sys.stdin.readline().strip()
-
-# a,b,c = map(int,input().split())
-# a = list(map(int, input().split()))
-# output = []
-# print(output, sep='\n')
-
-# for _ in range(int(input())):
-#     sols = []
-#     n = int(input())
-#     u = list(map(int, input().split()))
-#     s = list(map(int, input().split()))
-    
-#     obj = [[] for _ in range(n)]
-#     for i in range(n):
-#         school = u[i]
-#         obj[school-1].append(s[i])
-    
-#     for i in range(n):
-#         obj[i].sort(reverse=True)
-#         #obj[i] = [0] + obj[i]
-#         for j in range(1,len(obj[i])):
-#             obj[i][j] += obj[i][j-1]
-
-#     obj.sort(key=len, reverse=True)
-    
-#     for k in range(1,n+1):
-#         ans = 0
-#         for i in range(n): # loop over each school
-#             maxdiv = len(obj[i]) // k
-#             if maxdiv == 0:
-#                 break
-#             maxi = maxdiv*k - 1
-#             ans += obj[i][maxi]
-#         sols.append(str(ans))
-        
-#     print(' '.join(sols))
+    print("NO PATH")
+    # f = open("1-no_path_out.txt", "r")
+    # if f.read() == "NO PATH":
+    #     print("pass")
+    # else:
+    #     print("FAIL")
