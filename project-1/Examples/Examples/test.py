@@ -1,6 +1,6 @@
 import sys
 import networkx as nx
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 """ 
 Reading inputs 
@@ -80,23 +80,6 @@ for j in range(n-1):
 
 
 """
-Plot
-"""
-# val_map = {(1,1):0.0}
-# values = [val_map.get(node, 0.25) for node in G.nodes()]
-# pos = nx.spring_layout(G)
-# nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), 
-#                        node_color = values, node_size = 500)
-# nx.draw_networkx_labels(G, pos)
-# nx.draw_networkx_edges(G, pos, edgelist=list(G.edges), edge_color='b', arrows=True)
-# plt.show()
-
-
-# nx.draw(G, with_labels=True, font_weight='bold')
-# plt.show()
-
-
-"""
 Run traverse algorithm
 """
 try:
@@ -135,3 +118,66 @@ except nx.NetworkXNoPath:
     #     print("pass")
     # else:
     #     print("FAIL")
+
+
+"""
+Plot
+"""
+# val_map = {(1,1):0.0}
+# values = [val_map.get(node, 0.25) for node in G.nodes()]
+# pos = nx.spring_layout(G)
+# nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), 
+#                        node_color = values, node_size = 500)
+# nx.draw_networkx_labels(G, pos)
+# nx.draw_networkx_edges(G, pos, edgelist=list(G.edges), edge_color='b', arrows=True)
+# plt.show()
+
+# nx.draw(G, with_labels=True, font_weight='bold')
+# plt.show()
+
+# pos = nx.nx_agraph.graphviz_layout(G, prog="neato")
+# nx.draw_networkx_nodes(G, pos, node_color = 'yellow', node_size = 500)
+# nx.draw_networkx_labels(G, pos)
+# nx.draw_networkx_edges(G, pos, edgelist=list(G.edges), edge_color='black', arrows=True)
+# plt.show()
+
+# pos = nx.nx_agraph.graphviz_layout(G)
+# nx.draw_networkx(G, pos)
+# plt.show()
+# plt.savefig('networkx_graph.png')
+
+
+# Convert from NetworkX graph to Graphviz graph
+A = nx.nx_agraph.to_agraph(G)
+# Formatting start node in the given example
+A.get_node((1,2)).attr['style'] = 'filled'
+A.get_node((1,2)).attr['fillcolor'] = 'yellow'
+A.get_node((1,2)).attr['shape'] = 'square'
+# Formatting goal node in the given example
+A.get_node((-1,-1)).attr['style'] = 'filled'
+A.get_node((-1,-1)).attr['fillcolor'] = 'violet'
+A.get_node((-1,-1)).attr['shape'] = 'star'
+# Formatting the nodes along the shortest path
+A.get_node((1,1)).attr['style'] = 'filled'
+A.get_node((1,1)).attr['fillcolor'] = 'orange'
+A.get_node((1,3)).attr['style'] = 'filled'
+A.get_node((1,3)).attr['fillcolor'] = 'orange'
+A.get_node((3,3)).attr['style'] = 'filled'
+A.get_node((3,3)).attr['fillcolor'] = 'orange'
+A.get_node((3,5)).attr['style'] = 'filled'
+A.get_node((3,5)).attr['fillcolor'] = 'orange'
+A.get_node((6,5)).attr['style'] = 'filled'
+A.get_node((6,5)).attr['fillcolor'] = 'orange'
+A.get_node((6,8)).attr['style'] = 'filled'
+A.get_node((6,8)).attr['fillcolor'] = 'orange'
+# Formatting the edges along the shortest path
+A.get_edge(*((1,2) , (1,1))).attr['color'] = 'green'
+A.get_edge(*((1,1) , (1,3))).attr['color'] = 'green'
+A.get_edge(*((1,3) , (3,3))).attr['color'] = 'green'
+A.get_edge(*((3,3) , (3,5))).attr['color'] = 'green'
+A.get_edge(*((3,5) , (6,5))).attr['color'] = 'red'
+A.get_edge(*((6,5) , (6,8))).attr['color'] = 'red'
+A.get_edge(*((6,8) , (-1,-1))).attr['color'] = 'violet'
+# Set graph layout style and draw
+A.layout('dot')
+A.draw('networkx_graph.png')
