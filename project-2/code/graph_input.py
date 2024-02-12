@@ -16,5 +16,9 @@ for i in range(len(courses)):
     for j in range(1, int(course[0]) + 1):
         G.add_edge(course[j], course_num)
 
-print(G.edges)
+# Convert from NetworkX graph to Graphviz graph
+A = nx.nx_agraph.to_agraph(G)
+# Set graph layout style and draw
+A.layout('dot')
+A.draw('networkx_graph.png')
 
