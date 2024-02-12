@@ -21,6 +21,8 @@ for edge in G.edges:
     end_node = str(edge[1]).replace(', ', "").replace(")", "").replace("(", "")
     print(str(start_node) + " -> " + str(end_node))
 
+G.remove_node(2)
+print(is_directed_acyclic_graph(G))
 '''
 # Convert from NetworkX graph to Graphviz graph
 A = nx.nx_agraph.to_agraph(G)
