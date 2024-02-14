@@ -4,6 +4,7 @@ import algorithm
 import sys
 from colorama import Fore
 from os import listdir
+import os
 
 if __name__ == "__main__":
     debug = True
@@ -12,7 +13,11 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         filenames.append(sys.argv[1])
     else:
-        filenames = listdir("inputs")    
+        '''
+        #for sephia because her cwd is weird
+        os.chdir(os.path.dirname(os.path.abspath(__file__))) #changes current working directory to the one running the script
+        '''
+        filenames = listdir("inputs")
 
     for filename in filenames:
         print("Loading graph for [" + filename + "]")
