@@ -2,7 +2,6 @@ import networkx as nx
 import sys
 
 def load_graph(filename, debug):
-    #with open(sys.argv[1], 'r') as file:
     with open(filename) as file:
         nodes = file.readline()
         courses = file.readlines()
