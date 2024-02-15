@@ -5,9 +5,12 @@ import sys
 from colorama import Fore
 from os import listdir
 import os
+from timeit import default_timer as timer
+
+start = timer()
 
 if __name__ == "__main__":
-    debug = True
+    debug = False
 
     filenames = []
     if len(sys.argv) > 1:
@@ -27,3 +30,8 @@ if __name__ == "__main__":
         print("Validating the output...")
         if not validator.validate_output(G, "outputs/" + filename + "_output", debug):
             print(Fore.RED + "WARNING, SADNESS: OUTPUT WAS NOT VALID FOR [" + filename + "]")
+
+end = timer()
+msg = "Time elapsed: {} seconds."
+formatted_msg = msg.format(end-start)
+print(formatted_msg)

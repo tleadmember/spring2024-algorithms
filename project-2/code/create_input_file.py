@@ -10,9 +10,9 @@ def convert(lst):
 
 if __name__ == "__main__":
     # User inputs
-    num_nodes = 100
+    num_nodes = 2000 # 10 thousand got my terminal "Not Responding"
     debug = False
-    filename = "inputs/completeLarge"
+    filename = "inputs/completeLarge.txt"
 
     # Use networkx to design your input graph (CAN BE MODIFIED)
     G = nx.complete_graph(range(1,num_nodes+1), create_using=nx.DiGraph)
