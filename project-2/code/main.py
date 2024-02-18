@@ -7,7 +7,6 @@ from os import listdir
 import os
 from timeit import default_timer as timer
 
-start = timer()
 
 if __name__ == "__main__":
     debug = False
@@ -23,6 +22,7 @@ if __name__ == "__main__":
         filenames = listdir("inputs")
 
     for filename in filenames:
+        start = timer()
         print("Loading graph for [" + filename + "]")
         G = graph_input.load_graph("inputs/" + filename, debug)
         print("Running the incredible (hopefully) algorithm...")
@@ -30,8 +30,8 @@ if __name__ == "__main__":
         print("Validating the output...")
         if not validator.validate_output(G, "outputs/" + filename + "_output", debug):
             print(Fore.RED + "WARNING, SADNESS: OUTPUT WAS NOT VALID FOR [" + filename + "]")
-
-end = timer()
-msg = "Time elapsed: {} seconds."
-formatted_msg = msg.format(end-start)
-print(formatted_msg)
+            
+        end = timer()
+        msg = "Time elapsed: {} seconds."
+        formatted_msg = msg.format(end-start)
+        print(formatted_msg)
