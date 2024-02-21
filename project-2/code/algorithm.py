@@ -1,7 +1,7 @@
 import networkx as nx
 from heapdict import heapdict
 
-def algorithm(G):
+def algorithmPriorityQueue(G):
     sccs = (G.subgraph(c) for c in nx.strongly_connected_components(G))
     listNodes = []
     
@@ -24,7 +24,7 @@ def algorithm(G):
     return listNodes
 
 def create_output(G, filename):
-    removedNodes = algorithm(G)
+    removedNodes = algorithmPriorityQueue(G)
 
     with open(filename, "w") as file:
         file.write(str(len(removedNodes)))
