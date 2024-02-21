@@ -5,24 +5,30 @@ def algorithm(G):
     listNodes = []
     
     for subgraph in sccs:
-        # create copy so the subgraph can be modified. The original graph actually does not need to be modified. however this might be slow idk
         c = nx.DiGraph(G.subgraph(subgraph))
-        while not nx.is_directed_acyclic_graph(c):
-            maxDegreeNode = None
-            maxDegree = 0
-            for n in c:
-                if maxDegreeNode is None:
-                    maxDegreeNode = n
-                    maxDegree = c.in_degree(n) + c.out_degree(n)
-                    continue
-                if c.in_degree(n) + c.out_degree(n) > maxDegree:
-                    maxDegreeNode = n
-                    maxDegree = c.in_degree(n) + c.out_degree(n)
-            
-            c.remove_node(maxDegreeNode)
-            listNodes.append(maxDegreeNode)
+        untangleScc(c, listNodes)
 
     return listNodes
+
+def untangleScc(c, listNodes):
+    maxDegreeNode = None
+    maxDegree = 0
+    for n in c:
+        if maxDegreeNode is None:
+            maxDegreeNode = n
+            maxDegree = c.in_degree(n) + c.out_degree(n)
+            continue
+        if c.in_degree(n) + c.out_degree(n) > maxDegree:
+            maxDegreeNode = n
+            maxDegree = c.in_degree(n) + c.out_degree(n)
+        
+    c.remove_node(maxDegreeNode)
+    listNodes.append(maxDegreeNode)
+
+    sccs = (c.subgraph(g) for g in nx.strongly_connected_components(c))
+    for scc in sccs:
+        subgraph = nx.DiGraph(c.subgraph(scc))
+        untangleScc(subgraph, listNodes)
 
 def create_output(G, filename):
     removedNodes = algorithm(G)
