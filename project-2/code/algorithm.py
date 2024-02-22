@@ -31,10 +31,9 @@ def algorithm(G):
             maxCount = max(counts.values())
             commonNodes = [node for node, count in counts.items() if count == maxCount]
             # print("Common node(s):" + str(commonNodes))
-            # Remove all common nodes
-            for commonNode in commonNodes:
-                H.remove_node(commonNode)
-                listNodes.append(commonNode)
+            # Remove only the first of common nodes
+            H.remove_node(commonNodes[0])
+            listNodes.append(commonNodes[0])
 
 
     return listNodes
