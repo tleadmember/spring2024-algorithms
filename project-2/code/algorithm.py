@@ -7,38 +7,55 @@ def is_complete(G):
     n = len(nodeList)
     return H.size() == n*(n-1)
 
+def delete_nodes(H):
+    listNodes2 = []
+    sccs = nx.strongly_connected_components(H)
+    for scc in sccs:
+        if len([_ for _ in scc]) >= 2: # if SCC has only 1 node, go to next iteration of "for scc in sccs"
+            sg = H.subgraph(scc)    # create subgraph copy to modify
+            c = sg.copy()
+            while not nx.is_directed_acyclic_graph(c):
+                cycles = nx.simple_cycles(c, length_bound=c.number_of_nodes())
+                cyclesLst = [*cycles]
+                # print("Cycles list: " + str(cyclesLst))
+                # Find most common node(s) in cyclesLst (does not have to be in ALL cycles)
+                counts = defaultdict(lambda: 0)                
+                for cycle in cyclesLst:
+                    for node in cycle:
+                        counts[node] += 1
+                maxCount = max(counts.values())
+                commonNodes = [node for node, count in counts.items() if count == maxCount]
+                # print("Common node(s):" + str(commonNodes))
+
+                # Remove common nodes one by one and check if SCC is DAG yet
+                # for commonNode in commonNodes:
+                #     c.remove_node(commonNode)
+                #     # H.remove_node(commonNode)  
+                #     listNodes2.append(commonNode)
+                #     if nx.is_directed_acyclic_graph(c):
+                #         break
+
+                # Remove the first of common nodes in cycles and go back to checking if SCC is DAG, and find cycles again
+                c.remove_node(commonNodes[0])
+                listNodes2.append(commonNodes[0])
+
+            break   # only run "for scc in sccs" once after finding a SCC with at least 2 nodes, and recheck scc's in overall graph
+    for node in listNodes2:
+        H.remove_node(node)
+
+    return listNodes2
 
 def algorithm(G):
     listNodes = []
     
     # check if a complete graph
     if is_complete(G):
-        print("Complete graph detected!")
         listNodes = list(G)[1:] # delete everything but one node
     else:
-        H = G.subgraph(list(G)) 
-        H = H.copy()    # create subgraph copy of G to modify
-        # create copy so the subgraph can be modified. The original graph actually does not need to be modified. however this might be slow idk
+        H = G.subgraph(list(G))
+        H = H.copy() # create subgraph copy of G to modify
         while not nx.is_directed_acyclic_graph(H):
-            cycles = nx.simple_cycles(H, length_bound=H.number_of_nodes())
-            cyclesLst = [*cycles]
-            # print("Cycles list: " + str(cyclesLst))
-            # Find most common node(s) in cyclesLst (does not have to be in ALL cycles)
-            counts = defaultdict(lambda: 0)
-            for cycle in cyclesLst:
-                for node in cycle:
-                    counts[node] += 1
-            maxCount = max(counts.values())
-            commonNodes = [node for node, count in counts.items() if count == maxCount]
-            # print("Common node(s):" + str(commonNodes))
-            # Remove only the first of common nodes
-            for commonNode in commonNodes:
-                H.remove_node(commonNode)  
-                listNodes.append(commonNode)
-                if nx.is_directed_acyclic_graph(H):
-                    break
-
-
+            listNodes += delete_nodes(H)
 
     return listNodes
 
