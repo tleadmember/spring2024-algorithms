@@ -11,6 +11,9 @@ def algorithm(G):
     return listNodes
 
 def untangleScc(c, listNodes):
+    if len(c.nodes()) < 2:
+        return   
+    
     maxDegreeNode = None
     maxDegree = 0
     for n in c:
