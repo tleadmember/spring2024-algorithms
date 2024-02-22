@@ -32,8 +32,12 @@ def algorithm(G):
             commonNodes = [node for node, count in counts.items() if count == maxCount]
             # print("Common node(s):" + str(commonNodes))
             # Remove only the first of common nodes
-            H.remove_node(commonNodes[0])
-            listNodes.append(commonNodes[0])
+            for commonNode in commonNodes:
+                H.remove_node(commonNode)  
+                listNodes.append(commonNode)
+                if nx.is_directed_acyclic_graph(H):
+                    break
+
 
 
     return listNodes
