@@ -5,15 +5,15 @@ def algorithm(G):
     listNodes = []
     
     for subgraph in sccs:
+        if len(subgraph.nodes()) < 2:
+            continue
+
         c = nx.DiGraph(G.subgraph(subgraph))
         untangleScc(c, listNodes)
 
     return listNodes
 
-def untangleScc(c, listNodes):
-    if len(c.nodes()) < 2:
-        return   
-    
+def untangleScc(c, listNodes):    
     maxDegreeNode = None
     maxDegree = 0
     for n in c:
@@ -30,6 +30,9 @@ def untangleScc(c, listNodes):
 
     sccs = (c.subgraph(g) for g in nx.strongly_connected_components(c))
     for scc in sccs:
+        if len(scc.nodes()) < 2:
+            continue
+        
         subgraph = nx.DiGraph(c.subgraph(scc))
         untangleScc(subgraph, listNodes)
 
