@@ -1,4 +1,5 @@
 import networkx as nx
+from collections import defaultdict
 
 def algorithm(G):
     sccs = nx.strongly_connected_components(G)
@@ -9,23 +10,22 @@ def algorithm(G):
         sg = G.subgraph(scc)
         c = sg.copy()
         while not nx.is_directed_acyclic_graph(c):
-            cycles = nx.simple_cycles(c)
+            cycles = nx.simple_cycles(c, length_bound=c.number_of_nodes())
             cyclesLst = [*cycles]
-            print("Cycles list: " + str(cyclesLst))
-            # Extract common elements from list of lists, using list comprehension and set intersection
-            commonElmLst = list(set(cyclesLst[0]).intersection(*cyclesLst[1:]))           
-            # printing result
-            print("The common elements from N lists : " + str(commonElmLst))
-            if len(commonElmLst) == 0:          # if no common element in cycles, just delete the first random node
-                print("Deleting highest-degree node...")
-                badNode = cyclesLst[0][0]
-                c.remove_node(badNode)
-                listNodes.append(badNode)
-            else:
-                print("Got some common node(s) among cycles!")
-                for badNode in commonElmLst:    # if there is a common node in cycles, delete that node
-                    c.remove_node(badNode)
-                    listNodes.append(badNode)
+            # print("Cycles list: " + str(cyclesLst))
+            # Find most common node(s) in cyclesLst (does not have to be in ALL cycles)
+            counts = defaultdict(lambda: 0)
+            for cycle in cyclesLst:
+                for node in cycle:
+                    counts[node] += 1
+            maxCount = max(counts.values())
+            commonNodes = [node for node, count in counts.items() if count == maxCount]
+            # print("Common node(s):" + str(commonNodes))
+            # Remove all common nodes
+            for commonNode in commonNodes:
+                c.remove_node(commonNode)
+                listNodes.append(commonNode)
+
 
     return listNodes
 
