@@ -8,6 +8,19 @@ def algorithm(G):
         if len(subgraph.nodes()) < 2:
             continue
 
+        if subgraph.number_of_edges() == subgraph.number_of_nodes() * (subgraph.number_of_nodes() - 1):
+            listNodes += list(subgraph)[1:] # delete everything but one node
+            continue
+
+        # if the graph is a complete graph missing exactly one edge
+        if subgraph.number_of_edges() == subgraph.number_of_nodes() * (subgraph.number_of_nodes() - 1) - 1:
+            # remove only the nodes that are connected to every other node
+            for n in subgraph:
+                if subgraph.out_degree(n) + subgraph.in_degree(n) == 2 * (subgraph.number_of_nodes() - 1):
+                    listNodes.append(n)
+            
+            continue
+        
         c = nx.DiGraph(G.subgraph(subgraph))
         untangleScc(c, listNodes)
 
