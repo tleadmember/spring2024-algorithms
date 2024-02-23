@@ -1,6 +1,9 @@
 import networkx as nx
 
 def algorithm(G):
+    thresholdNodes = 100 # tbd
+    thresholdEdges = 1000
+    
     sccs = (G.subgraph(c) for c in nx.strongly_connected_components(G))
     listNodes = []
     
@@ -22,7 +25,13 @@ def algorithm(G):
             continue
         
         c = nx.DiGraph(G.subgraph(subgraph))
-        untangleScc(c, listNodes)
+
+        if thresholdNodes < c.number_of_nodes() or thresholdEdges < c.number_of_edges():
+            # if above the threshold, do the faster but less optimal algorithm.
+            untangleScc(c, listNodes)
+        else:
+            # otherwise, do the slower but more optimal algorithm.
+            untangleScc(c, listNodes)
 
     return listNodes
 
