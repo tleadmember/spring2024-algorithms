@@ -1,4 +1,5 @@
 import networkx as nx
+from collections import defaultdict
 
 def algorithm(G):
     thresholdNodes = 100 # tbd
@@ -31,7 +32,10 @@ def algorithm(G):
             untangleScc(c, listNodes)
         else:
             # otherwise, do the slower but more optimal algorithm.
-            untangleScc(c, listNodes)
+            H = G.subgraph(list(G))
+            H = H.copy() # create subgraph copy to modify
+            while not nx.is_directed_acyclic_graph(H):
+                listNodes += delete_nodes(H)
 
     return listNodes
 
@@ -57,6 +61,57 @@ def untangleScc(c, listNodes):
         
         subgraph = nx.DiGraph(c.subgraph(scc))
         untangleScc(subgraph, listNodes)
+
+def delete_nodes(H):
+    listNodes2 = []
+    # sccs = nx.strongly_connected_components(H)
+    sccs = (H.subgraph(c) for c in nx.strongly_connected_components(H))
+    for scc in sccs:
+        if len(scc.nodes()) >= 2: # if SCC has only 1 node, go to next iteration of "for scc in sccs"
+            sg = H.subgraph(scc)    # create subgraph copy to modify
+            c = sg.copy()
+            # while not nx.is_directed_acyclic_graph(c): ### instead of making each SCC DAG, just delete one common cycle node and recheck SCC's on whole graph
+            cycles = nx.simple_cycles(c, length_bound=c.number_of_nodes())
+            cyclesLst = [*cycles]
+            delete_common(c, listNodes2, cyclesLst)
+            # break   # only run "for scc in sccs" once after finding a SCC with at least 2 nodes, and recheck scc's in overall graph
+    for node in listNodes2:
+        H.remove_node(node)
+    return listNodes2
+
+def delete_common(c, listNodes2, cyclesLst):
+    # Find most common node(s) in cyclesLst (does not have to be in ALL cycles)
+    counts = defaultdict(lambda: 0)                
+    for cycle in cyclesLst:
+        for node in cycle:
+            counts[node] += 1
+    maxCount = max(counts.values())
+    commonNodes = [node for node, count in counts.items() if count == maxCount]
+
+    # Remove common nodes one by one and check if SCC is DAG yet
+    # for commonNode in commonNodes:
+    #     c.remove_node(commonNode)
+    #     # H.remove_node(commonNode)  
+    #     listNodes2.append(commonNode)
+    #     if nx.is_directed_acyclic_graph(c):
+    #         break
+
+    # Remove the first of common nodes in cycles and go back to checking if SCC is DAG, and find cycles again
+    c.remove_node(commonNodes[0])
+    listNodes2.append(commonNodes[0])
+
+    # Check if a cycle has had the node delete from it. If yes, then it probably is no longer a cycle and therefore not insignicant.
+    # If the cycle hasn't been touched, then add it to a new list that needs more work on.
+    cyclesLst2 = []
+    for cycle in cyclesLst:
+        isStubborn = True # initialize a flag
+        for node in cycle:
+            if node == commonNodes[0]:
+                isStubborn = False
+        if isStubborn == True:
+            cyclesLst2.append(cycle)
+    if len(cyclesLst2) > 0:
+        delete_common(c, listNodes2, cyclesLst2) # recursive
 
 def create_output(G, filename):
     removedNodes = algorithm(G)
