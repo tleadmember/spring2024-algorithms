@@ -1,6 +1,7 @@
 import networkx as nx
 from functools import reduce
 from colorama import Fore
+import sys
  
 def convert(lst):
     # using reduce function to cumulatively apply lambda function to each element
@@ -15,9 +16,11 @@ def write_graph_to_file(G):
 
     if G.number_of_nodes() > maxNumNodes:
         print(Fore.RED + "WARNING, SADNESS: GENERATED INPUT EXCEEDED THE MAXIMUM NUMBER OF NODES WITH [" + G.number_of_nodes() + "] NODES")
+        sys.stdout.flush()
         
     if G.number_of_edges() > maxNumEdges:
         print(Fore.RED + "WARNING, SADNESS: GENERATED INPUT EXCEEDED THE MAXIMUM NUMBER OF EDGES WITH [" + G.number_of_nodes() + "] EDGES")
+        sys.stdout.flush()
 
     listsPrereqs = [[] for _ in range(G.number_of_nodes())]
 
