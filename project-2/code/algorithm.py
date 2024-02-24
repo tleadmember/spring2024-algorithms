@@ -1,5 +1,7 @@
 import networkx as nx
 from collections import defaultdict
+import random
+import math
 
 def is_complete(G):
     nodeList = list(G)
@@ -17,15 +19,16 @@ def delete_nodes(H):
             while not nx.is_directed_acyclic_graph(c):
                 cycle = nx.find_cycle(c)
                 cycle = [*cycle]
-                # Find most common node(s) in cyclesLst (does not have to be in ALL cycles)
-                counts = defaultdict(lambda: 0)                
-                for edge in cycle:
-                    node = edge[0]
-                    break # take only 1 node out to remove
-                # Remove common nodes one by one and check if SCC is DAG yet
+                # Take 1 random node out to remove
+                min = 0
+                max = len(cycle)-1
+                randIndex = random.randint(min,max)
+                edge = cycle[randIndex]
+                randIndex = random.randint(0,1)
+                node = edge[randIndex]
+                # Remove nodes one by one and check if SCC is DAG yet
                 c.remove_node(node)
                 listNodes2.append(node)
-
             # break   # only run "for scc in sccs" once after finding a SCC with at least 2 nodes, and recheck scc's in overall graph
     for node in listNodes2:
         H.remove_node(node)
@@ -40,8 +43,8 @@ def algorithm(G):
     else:
         H = G.subgraph(list(G))
         H = H.copy() # create subgraph copy of G to modify
-        while not nx.is_directed_acyclic_graph(H):
-            listNodes += delete_nodes(H)
+        # while not nx.is_directed_acyclic_graph(H):
+        listNodes += delete_nodes(H)
 
     return listNodes
 
