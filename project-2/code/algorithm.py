@@ -1,5 +1,9 @@
 import networkx as nx
 from collections import defaultdict
+import random
+import math
+
+RANDOM_FLAG = True
 
 def algorithm(G):
     thresholdNodes = 100 # tbd
@@ -27,12 +31,15 @@ def algorithm(G):
         
         c = nx.DiGraph(G.subgraph(subgraph))
 
-        if thresholdNodes < c.number_of_nodes() or thresholdEdges < c.number_of_edges():
+        if RANDOM_FLAG:
+            algorithmRandom(G, listNodes)
+            break
+        elif thresholdNodes < c.number_of_nodes() or thresholdEdges < c.number_of_edges():
             # if above the threshold, do the faster but less optimal algorithm.
             untangleScc(c, listNodes)
         else:
             # otherwise, do the slower but more optimal algorithm.
-            algorithm2(G, listNodes)
+            algorithmSlow(G, listNodes)
             break
 
     return listNodes
@@ -60,7 +67,49 @@ def untangleScc(c, listNodes):
         subgraph = nx.DiGraph(c.subgraph(scc))
         untangleScc(subgraph, listNodes)
 
-def algorithm2(G, listNodes):
+def is_complete(G):
+    nodeList = list(G)
+    H = G.subgraph(nodeList)
+    n = len(nodeList)
+    return H.size() == n*(n-1)
+
+def algorithmRandom(G, listNodes):
+    # check if a complete graph
+    if is_complete(G):
+        listNodes = list(G)[1:] # delete everything but one node
+    else:
+        H = G.subgraph(list(G))
+        H = H.copy() # create subgraph copy of G to modify
+        # while not nx.is_directed_acyclic_graph(H):
+        listNodes += delete_nodes_random(H)
+    return listNodes
+
+def delete_nodes_random(H):
+    listNodes2 = []
+    sccs = (H.subgraph(c) for c in nx.strongly_connected_components(H))
+    for scc in sccs:
+        if len(scc.nodes()) >= 2: # if SCC has only 1 node, go to next iteration of "for scc in sccs"
+            sg = H.subgraph(scc)    # create subgraph copy to modify
+            c = sg.copy()
+            while not nx.is_directed_acyclic_graph(c):
+                cycle = nx.find_cycle(c)
+                cycle = [*cycle]
+                # Take 1 random node out to remove
+                min = 0
+                max = len(cycle)-1
+                randIndex = random.randint(min,max)
+                edge = cycle[randIndex]
+                randIndex = random.randint(0,1)
+                node = edge[randIndex]
+                # Remove nodes one by one and check if SCC is DAG yet
+                c.remove_node(node)
+                listNodes2.append(node)
+            # break   # only run "for scc in sccs" once after finding a SCC with at least 2 nodes, and recheck scc's in overall graph
+    for node in listNodes2:
+        H.remove_node(node)
+    return listNodes2
+
+def algorithmSlow(G, listNodes):
     # check if a complete graph
     if is_complete(G):
         listNodes = list(G)[1:] # delete everything but one node
@@ -69,12 +118,6 @@ def algorithm2(G, listNodes):
         H = H.copy() # create subgraph copy of G to modify
         while not nx.is_directed_acyclic_graph(H):
             listNodes += delete_nodes(H)
-
-def is_complete(G):
-    nodeList = list(G)
-    H = G.subgraph(nodeList)
-    n = len(nodeList)
-    return H.size() == n*(n-1)
 
 def delete_nodes(H):
     listNodes2 = []
