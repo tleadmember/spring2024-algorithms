@@ -32,10 +32,8 @@ def algorithm(G):
             untangleScc(c, listNodes)
         else:
             # otherwise, do the slower but more optimal algorithm.
-            H = G.subgraph(list(G))
-            H = H.copy() # create subgraph copy to modify
-            while not nx.is_directed_acyclic_graph(H):
-                listNodes += delete_nodes(H)
+            algorithm2(G, listNodes)
+            break
 
     return listNodes
 
@@ -61,6 +59,22 @@ def untangleScc(c, listNodes):
         
         subgraph = nx.DiGraph(c.subgraph(scc))
         untangleScc(subgraph, listNodes)
+
+def algorithm2(G, listNodes):
+    # check if a complete graph
+    if is_complete(G):
+        listNodes = list(G)[1:] # delete everything but one node
+    else:
+        H = G.subgraph(list(G))
+        H = H.copy() # create subgraph copy of G to modify
+        while not nx.is_directed_acyclic_graph(H):
+            listNodes += delete_nodes(H)
+
+def is_complete(G):
+    nodeList = list(G)
+    H = G.subgraph(nodeList)
+    n = len(nodeList)
+    return H.size() == n*(n-1)
 
 def delete_nodes(H):
     listNodes2 = []
