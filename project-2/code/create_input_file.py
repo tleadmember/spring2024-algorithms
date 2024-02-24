@@ -25,12 +25,13 @@ def write_graph_to_file(G):
     listsPrereqs = [[] for _ in range(G.number_of_nodes())]
 
     for edge in G.edges:
-        end_node = edge[1]
-        start_node = edge[0]
+        # add 1 as networkx likes to label things starting from 0
+        end_node = edge[1] + 1
+        start_node = edge[0] + 1
         listsPrereqs[end_node-1].append(start_node)
 
     with open(filename, "w") as file:
-        file.write(str(num_nodes))
+        file.write(str(G.number_of_nodes()))
         file.write("\n")
 
         total_length = len(listsPrereqs)
@@ -53,22 +54,20 @@ def combine_graphs(G, H, weaklyConnect):
     if not weaklyConnect:
         return nx.disjoint_union(G, H)
 
-    n1 = G.nodes()[0]
-    n2 = H.nodes()[1]
     I = nx.disjoint_union(G, H)
-    I.add_edge(n1, n2)
+    I.add_edge(0, G.number_of_nodes())
     return I
 
 def generate_graph(num_nodes):
     # return nx.complete_graph(range(1,num_nodes+1), create_using=nx.DiGraph)
 
-    G = nx.complete_graph(range(1,num_nodes+1), create_using=nx.DiGraph)
-    H = nx.complete_graph(range(1,num_nodes+1), create_using=nx.DiGraph)
-    return combine_graphs(G, H, False)
+    G = nx.complete_graph(range(0,num_nodes), create_using=nx.DiGraph)
+    H = nx.complete_graph(range(0,num_nodes), create_using=nx.DiGraph)
+    return combine_graphs(G, H, True)
 
 if __name__ == "__main__":
     # User inputs
-    num_nodes = 316 # bound is 10^4 nodes, 10^5 edges
+    num_nodes = 10 # bound is 10^4 nodes, 10^5 edges
     debug = False
     filename = "inputs/finalinput.txt"
 
