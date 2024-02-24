@@ -3,11 +3,11 @@ from collections import defaultdict
 import random
 import math
 
-RANDOM_FLAG = True
+RANDOM_FLAG = False
 
 def algorithm(G):
-    thresholdNodes = 100 # tbd
-    thresholdEdges = 1000
+    thresholdNodes = 10 # tbd
+    thresholdEdges = 90
     
     sccs = (G.subgraph(c) for c in nx.strongly_connected_components(G))
     listNodes = []
@@ -28,19 +28,20 @@ def algorithm(G):
                     listNodes.append(n)
             
             continue
-        
-        c = nx.DiGraph(G.subgraph(subgraph))
+
+        H = G.subgraph(list(G))
+        H = H.copy() # create subgraph copy of G to modify
+        c = nx.DiGraph(H.subgraph(subgraph))
 
         if RANDOM_FLAG:
-            algorithmRandom(G, listNodes)
-            break
+            algorithmRandom(c, listNodes)
         elif thresholdNodes < c.number_of_nodes() or thresholdEdges < c.number_of_edges():
             # if above the threshold, do the faster but less optimal algorithm.
             untangleScc(c, listNodes)
         else:
-            # otherwise, do the slower but more optimal algorithm.
-            algorithmSlow(G, listNodes)
-            break
+            # otherwise, do the slower 
+            # but more optimal algorithm.
+            algorithmSlow(c, listNodes)
 
     return listNodes
 
@@ -67,76 +68,30 @@ def untangleScc(c, listNodes):
         subgraph = nx.DiGraph(c.subgraph(scc))
         untangleScc(subgraph, listNodes)
 
-def is_complete(G):
-    nodeList = list(G)
-    H = G.subgraph(nodeList)
-    n = len(nodeList)
-    return H.size() == n*(n-1)
-
-def algorithmRandom(G, listNodes):
-    # check if a complete graph
-    if is_complete(G):
-        listNodes = list(G)[1:] # delete everything but one node
-    else:
-        H = G.subgraph(list(G))
-        H = H.copy() # create subgraph copy of G to modify
-        # while not nx.is_directed_acyclic_graph(H):
-        listNodes += delete_nodes_random(H)
+def algorithmRandom(c, listNodes):
+    while not nx.is_directed_acyclic_graph(c):
+        cycle = nx.find_cycle(c)
+        cycle = [*cycle]
+        # Take 1 random node out to remove
+        min = 0
+        max = len(cycle)-1
+        randIndex = random.randint(min,max)
+        edge = cycle[randIndex]
+        randIndex = random.randint(0,1)
+        node = edge[randIndex]
+        # Remove nodes one by one and check if SCC is DAG yet
+        c.remove_node(node)
+        listNodes.append(node)
     return listNodes
 
-def delete_nodes_random(H):
-    listNodes2 = []
-    sccs = (H.subgraph(c) for c in nx.strongly_connected_components(H))
-    for scc in sccs:
-        if len(scc.nodes()) >= 2: # if SCC has only 1 node, go to next iteration of "for scc in sccs"
-            sg = H.subgraph(scc)    # create subgraph copy to modify
-            c = sg.copy()
-            while not nx.is_directed_acyclic_graph(c):
-                cycle = nx.find_cycle(c)
-                cycle = [*cycle]
-                # Take 1 random node out to remove
-                min = 0
-                max = len(cycle)-1
-                randIndex = random.randint(min,max)
-                edge = cycle[randIndex]
-                randIndex = random.randint(0,1)
-                node = edge[randIndex]
-                # Remove nodes one by one and check if SCC is DAG yet
-                c.remove_node(node)
-                listNodes2.append(node)
-            # break   # only run "for scc in sccs" once after finding a SCC with at least 2 nodes, and recheck scc's in overall graph
-    for node in listNodes2:
-        H.remove_node(node)
-    return listNodes2
+def algorithmSlow(c, listNodes):
+    while not nx.is_directed_acyclic_graph(c):
+        cycles = nx.simple_cycles(c, length_bound=c.number_of_nodes())
+        cyclesLst = [*cycles]
+        delete_common(c, listNodes, cyclesLst)
+        return listNodes
 
-def algorithmSlow(G, listNodes):
-    # check if a complete graph
-    if is_complete(G):
-        listNodes = list(G)[1:] # delete everything but one node
-    else:
-        H = G.subgraph(list(G))
-        H = H.copy() # create subgraph copy of G to modify
-        while not nx.is_directed_acyclic_graph(H):
-            listNodes += delete_nodes(H)
-
-def delete_nodes(H):
-    listNodes2 = []
-    # sccs = nx.strongly_connected_components(H)
-    sccs = (H.subgraph(c) for c in nx.strongly_connected_components(H))
-    for scc in sccs:
-        if len(scc.nodes()) >= 2: # if SCC has only 1 node, go to next iteration of "for scc in sccs"
-            sg = H.subgraph(scc)    # create subgraph copy to modify
-            c = sg.copy()
-            # while not nx.is_directed_acyclic_graph(c): ### instead of making each SCC DAG, just delete one common cycle node and recheck SCC's on whole graph
-            cycles = nx.simple_cycles(c, length_bound=c.number_of_nodes())
-            cyclesLst = [*cycles]
-            delete_common(c, listNodes2, cyclesLst)
-            # break   # only run "for scc in sccs" once after finding a SCC with at least 2 nodes, and recheck scc's in overall graph
-    for node in listNodes2:
-        H.remove_node(node)
-    return listNodes2
-
-def delete_common(c, listNodes2, cyclesLst):
+def delete_common(c, listNodes, cyclesLst):
     # Find most common node(s) in cyclesLst (does not have to be in ALL cycles)
     counts = defaultdict(lambda: 0)                
     for cycle in cyclesLst:
@@ -144,19 +99,9 @@ def delete_common(c, listNodes2, cyclesLst):
             counts[node] += 1
     maxCount = max(counts.values())
     commonNodes = [node for node, count in counts.items() if count == maxCount]
-
-    # Remove common nodes one by one and check if SCC is DAG yet
-    # for commonNode in commonNodes:
-    #     c.remove_node(commonNode)
-    #     # H.remove_node(commonNode)  
-    #     listNodes2.append(commonNode)
-    #     if nx.is_directed_acyclic_graph(c):
-    #         break
-
     # Remove the first of common nodes in cycles and go back to checking if SCC is DAG, and find cycles again
     c.remove_node(commonNodes[0])
-    listNodes2.append(commonNodes[0])
-
+    listNodes.append(commonNodes[0])
     # Check if a cycle has had the node delete from it. If yes, then it probably is no longer a cycle and therefore not insignicant.
     # If the cycle hasn't been touched, then add it to a new list that needs more work on.
     cyclesLst2 = []
@@ -168,7 +113,7 @@ def delete_common(c, listNodes2, cyclesLst):
         if isStubborn == True:
             cyclesLst2.append(cycle)
     if len(cyclesLst2) > 0:
-        delete_common(c, listNodes2, cyclesLst2) # recursive
+        delete_common(c, listNodes, cyclesLst2) # recurse
 
 def create_output(G, filename):
     removedNodes = algorithm(G)
