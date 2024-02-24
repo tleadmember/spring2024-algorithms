@@ -89,7 +89,7 @@ def algorithmSlow(c, listNodes):
         cycles = nx.simple_cycles(c, length_bound=c.number_of_nodes())
         cyclesLst = [*cycles]
         delete_common(c, listNodes, cyclesLst)
-        return listNodes
+    return listNodes
 
 def delete_common(c, listNodes, cyclesLst):
     # Find most common node(s) in cyclesLst (does not have to be in ALL cycles)
