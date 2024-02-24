@@ -78,10 +78,10 @@ if __name__ == "__main__":
             end_node = str(edge[1]).replace(', ', "").replace(")", "").replace("(", "")
             print(str(start_node) + " -> " + str(end_node))
     
-    # Convert from NetworkX graph to Graphviz graph (linux only, apparently)
-    A = nx.nx_agraph.to_agraph(G)
-    # Set graph layout style and draw
-    A.layout('dot')
-    A.draw('networkx_graph2.png')
+    # # Convert from NetworkX graph to Graphviz graph (linux only, apparently)
+    # A = nx.nx_agraph.to_agraph(G)
+    # # Set graph layout style and draw
+    # A.layout('dot')
+    # A.draw('networkx_graph2.png')
             
     write_graph_to_file(G)
