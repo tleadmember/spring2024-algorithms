@@ -55,7 +55,10 @@ def algorithm(G):
             algorithmSlow(c, tmp)
 
         # find the one with the smallest number of elements removed
-        listNodes.extend(min(listListNodes, key = len))
+        minimumListNodes = min(listListNodes, key = len)
+        tmp = []
+        c = nx.DiGraph(H.subgraph(subgraph))
+        listNodes.extend(algorithmRandomWithStartingPoint(c, tmp, minimumListNodes))
 
     return listNodes
 
@@ -96,6 +99,42 @@ def algorithmRandom(c, listNodes):
         # Remove nodes one by one and check if SCC is DAG yet
         c.remove_node(node)
         listNodes.append(node)
+    return listNodes
+
+def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, count = 0):
+    if len(startingPoint) == 1:
+        listNodes = startingPoint
+        return listNodes
+    
+    if count == 100:
+        listNodes = startingPoint
+        return listNodes
+    
+    newStartingPoint = []
+    randomNodes = random.sample(startingPoint, k = 2)
+    n1 = randomNodes[0]
+    n2 = randomNodes[1]
+    d = c.copy()
+
+    for n in startingPoint:
+        if n != n1 and n != n2: 
+            d.remove_node(n)
+            newStartingPoint.append(n)
+
+    nodes = list(d.nodes())
+    for i in range(0, 500):
+        e = d.copy()
+        n = random.choice(nodes)
+        e.remove_node(n)
+        if nx.is_directed_acyclic_graph(e):
+            newStartingPoint.append(n)
+            break
+    
+    if len(newStartingPoint) == len(startingPoint) - 2:
+        listNodes = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, count + 1)
+    else:
+        listNodes = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, count + 1)
+
     return listNodes
 
 def algorithmSlow(c, listNodes):

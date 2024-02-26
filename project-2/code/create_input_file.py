@@ -155,7 +155,7 @@ def directed_wheel(circumference): #circumference is the number of nodes surroun
     return G
 
 def tutte_inspired():
-    G = graph_input.load_graph("inputs/inputBill.txt", False)
+    G = graph_input.load_graph(filename, False)
     return G
 
 
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     # User inputs
     num_nodes = 10 # bound is 10^4 nodes, 10^5 edges
     debug = False
-    filename = "inputs/finalinput.txt"
+    filename = "inputs/testing.txt"
 
     # Use networkx to design your input graph (CAN BE MODIFIED)
     G = generate_graph()
