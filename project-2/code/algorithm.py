@@ -6,8 +6,8 @@ import math
 RANDOM_FLAG = False
 
 def algorithm(G):
-    thresholdNodes = 10 # tbd
-    thresholdEdges = 90
+    thresholdNodes = 0 # tbd
+    thresholdEdges = 0
     
     sccs = (G.subgraph(c) for c in nx.strongly_connected_components(G))
     listNodes = []
@@ -31,17 +31,31 @@ def algorithm(G):
 
         H = G.subgraph(list(G))
         H = H.copy() # create subgraph copy of G to modify
-        c = nx.DiGraph(H.subgraph(subgraph))
 
-        if RANDOM_FLAG:
-            algorithmRandom(c, listNodes)
-        elif thresholdNodes < c.number_of_nodes() or thresholdEdges < c.number_of_edges():
-            # if above the threshold, do the faster but less optimal algorithm.
-            untangleScc(c, listNodes)
-        else:
-            # otherwise, do the slower 
-            # but more optimal algorithm.
-            algorithmSlow(c, listNodes)
+        # Do all the algorithms, and compare them to find the best one. 
+        listListNodes = []
+
+        # Do algorithm random 100 times (will we win the lottery???)
+        for i in range(0, 1000):
+            # make a copy of c each time an algorithm is run
+            c = nx.DiGraph(H.subgraph(subgraph))
+            tmp = []
+            algorithmRandom(c, tmp)
+            listListNodes.append(tmp)
+
+        tmp = []
+        c = nx.DiGraph(H.subgraph(subgraph))
+        untangleScc(c, tmp)
+        listListNodes.append(tmp)
+
+        # if below the threshold then do the slow algorithm
+        if thresholdNodes >= c.number_of_nodes() or thresholdEdges >= c.number_of_edges():
+            tmp = []
+            c = nx.DiGraph(H.subgraph(subgraph))
+            algorithmSlow(c, tmp)
+
+        # find the one with the smallest number of elements removed
+        listNodes.extend(min(listListNodes, key = len))
 
     return listNodes
 
