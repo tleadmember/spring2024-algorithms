@@ -11,7 +11,7 @@ def convert(lst):
     return reduce(lambda x,y: x + ' ' + y, lst_string)
 
 def write_graph_to_file(G):
-    print("Writing graph to file " + filename + " with " + G.number_of_edges() " edges and " + G.number_of_nodes() " nodes")
+    print("Writing graph to file " + filename + " with " + str(G.number_of_edges()) + " edges and " + str(G.number_of_nodes()) + " nodes")
     sys.stdout.flush()
     # Translate networkx graph into input file format
     maxNumNodes = 10000
@@ -84,6 +84,8 @@ def generate_graph():
 
     # determined stuff
     G = combine_graphs(G, split_merge(8), True)
+    G = combine_graphs(G, split_merge_split_merge(8), True)
+    G = combine_graphs(G, directed_wheel(20), True)
 
     return G
 
