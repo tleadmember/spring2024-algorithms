@@ -3,6 +3,7 @@ from functools import reduce
 from colorama import Fore
 import sys
 import random
+import graph_input
  
 def convert(lst):
     # using reduce function to cumulatively apply lambda function to each element
@@ -86,6 +87,7 @@ def generate_graph():
     G = combine_graphs(G, split_merge(8), True)
     G = combine_graphs(G, split_merge_split_merge(8), True)
     G = combine_graphs(G, directed_wheel(20), True)
+    G = combine_graphs(G, tutte_inspired(), True)
 
     return G
 
@@ -151,6 +153,11 @@ def directed_wheel(circumference): #circumference is the number of nodes surroun
     G = nx.DiGraph()
     #add more later
     return G
+
+def tutte_inspired():
+    G = graph_input.load_graph("inputs/inputBill.txt", False)
+    return G
+
 
 if __name__ == "__main__":
     # User inputs
