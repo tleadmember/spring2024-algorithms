@@ -65,12 +65,12 @@ def generate_graph(num_nodes):
     H = nx.complete_graph(range(0,num_nodes), create_using=nx.DiGraph)
     return combine_graphs(G, H, True)
 
-def quick_split_merge(num_splits):
+def split_merge(num_splits):
     #num_splits must be in the 2^n sequence to work (2,4,8,16,32...etc.)
-    J = nx.DiGraph()
+    G = nx.DiGraph()
     start_node = 1 #start node in split sequence
     for i in range(start_node, num_splits + start_node):
-        J.add_edge(0,i)
+        G.add_edge(0,i)
     
     while num_splits != 1:
         for i in range (start_node, num_splits + start_node):
@@ -78,18 +78,42 @@ def quick_split_merge(num_splits):
                 merge_node = num_splits + i - 1
             else:
                 merge_node = num_splits + i
-            J.add_edge(i, merge_node)
+            G.add_edge(i, merge_node)
         start_node = num_splits + start_node
         num_splits = num_splits / 2
     
     # add cycle
     curr_node = start_node
-    J.add_edge(curr_node, curr_node + 1)
-    J.add_edge(curr_node + 1, 0)
-    J.add_edge(curr_node + 1, curr_node + 2)
-    J.add_edge(curr_node + 2, curr_node + 1)
+    G.add_edge(curr_node, curr_node + 1)
+    G.add_edge(curr_node + 1, 0)
+    G.add_edge(curr_node + 1, curr_node + 2)
+    G.add_edge(curr_node + 2, curr_node + 1)
     
+    return G
+
+def split_merge_split_merge(num_splits):
+    G = nx.DiGraph()
+    center_node = 0
+    for i in range(1, num_splits + 1):
+        G.add_edge(center_node, i)
+        G.add_edge(i, num_splits + 1)
+    center_node = num_splits + 1
+    for i in range(center_node + 1, center_node + num_splits + 1):
+        G.add_edge(center_node, i)
+        G.add_edge(i, center_node + num_splits + 1)
+    center_node += (num_splits + 1)
+    #add cycle
+    G.add_edge(center_node, center_node + 1)
+    G.add_edge(center_node + 1, 0)
+    G.add_edge(center_node + 1, center_node + 2)
+    G.add_edge(center_node + 2, center_node + 1)
+
+    return G
     
+def directed_wheel(circumference): #circumference is the number of nodes surrounding center node
+    G = nx.DiGraph()
+    #add more later
+    return G
 
 
 if __name__ == "__main__":
