@@ -65,6 +65,33 @@ def generate_graph(num_nodes):
     H = nx.complete_graph(range(0,num_nodes), create_using=nx.DiGraph)
     return combine_graphs(G, H, True)
 
+def quick_split_merge(num_splits):
+    #num_splits must be in the 2^n sequence to work (2,4,8,16,32...etc.)
+    J = nx.DiGraph()
+    start_node = 1 #start node in split sequence
+    for i in range(start_node, num_splits + start_node):
+        J.add_edge(0,i)
+    
+    while num_splits != 1:
+        for i in range (start_node, num_splits + start_node):
+            if i % 2 == 0:
+                merge_node = num_splits + i - 1
+            else:
+                merge_node = num_splits + i
+            J.add_edge(i, merge_node)
+        start_node = num_splits + start_node
+        num_splits = num_splits / 2
+    
+    # add cycle
+    curr_node = start_node
+    J.add_edge(curr_node, curr_node + 1)
+    J.add_edge(curr_node + 1, 0)
+    J.add_edge(curr_node + 1, curr_node + 2)
+    J.add_edge(curr_node + 2, curr_node + 1)
+    
+    
+
+
 if __name__ == "__main__":
     # User inputs
     num_nodes = 10 # bound is 10^4 nodes, 10^5 edges
