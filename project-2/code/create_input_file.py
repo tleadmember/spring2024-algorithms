@@ -85,6 +85,7 @@ def generate_graph():
 
     # determined stuff
     G = combine_graphs(G, split_merge(8), True)
+    G = combine_graphs(G, nx.reverse(split_merge(8)), True) #reverse edge direction of previous graph
     G = combine_graphs(G, split_merge_split_merge(8), True)
     G = combine_graphs(G, directed_wheel(20), True)
     G = combine_graphs(G, tutte_inspired(), True)
@@ -151,7 +152,15 @@ def split_merge_split_merge(num_splits):
     
 def directed_wheel(circumference): #circumference is the number of nodes surrounding center node
     G = nx.DiGraph()
-    #add more later
+    #create circle
+    for i in range(1, circumference): 
+        G.add_edge(i-1, i)
+    G.add_edge(0, circumference - 1) #closes circle
+    
+    center_node = circumference #next number name for node
+    for i in range(0, circumference - 1):
+        G.add_edge(center_node, i)
+    G.add_edge(circumference - 1, center_node) #single reverse edge
     return G
 
 def tutte_inspired():
