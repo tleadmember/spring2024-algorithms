@@ -11,6 +11,8 @@ def convert(lst):
     return reduce(lambda x,y: x + ' ' + y, lst_string)
 
 def write_graph_to_file(G):
+    print("Writing graph to file " + filename + " with " + G.number_of_edges() " edges and " + G.number_of_nodes() " nodes")
+    sys.stdout.flush()
     # Translate networkx graph into input file format
     maxNumNodes = 10000
     maxNumEdges = 100000
@@ -81,7 +83,7 @@ def generate_graph():
     line_with_random_back_edges(20, 0.5)
 
     # determined stuff
-    G = combine_graphs(G, quick_split_merge(8), True)
+    G = combine_graphs(G, split_merge(8), True)
 
     return G
 
@@ -98,12 +100,12 @@ def line_with_random_back_edges(n, p):
     
     return G
 
-def quick_split_merge(num_splits):
+def split_merge(num_splits):
     #num_splits must be in the 2^n sequence to work (2,4,8,16,32...etc.)
-    J = nx.DiGraph()
+    G = nx.DiGraph()
     start_node = 1 #start node in split sequence
     for i in range(start_node, num_splits + start_node):
-        J.add_edge(0,i)
+        G.add_edge(0,i)
     
     while num_splits != 1:
         for i in range (start_node, num_splits + start_node):
@@ -111,19 +113,43 @@ def quick_split_merge(num_splits):
                 merge_node = num_splits + i - 1
             else:
                 merge_node = num_splits + i
-            J.add_edge(i, merge_node)
+            G.add_edge(i, merge_node)
         start_node = num_splits + start_node
         num_splits = int(num_splits / 2)
     
     # add cycle
     curr_node = start_node
-    J.add_edge(curr_node, curr_node + 1)
-    J.add_edge(curr_node + 1, 0)
-    J.add_edge(curr_node + 1, curr_node + 2)
-    J.add_edge(curr_node + 2, curr_node + 1)
+    G.add_edge(curr_node, curr_node + 1)
+    G.add_edge(curr_node + 1, 0)
+    G.add_edge(curr_node + 1, curr_node + 2)
+    G.add_edge(curr_node + 2, curr_node + 1)
+
+    return G
+
+def split_merge_split_merge(num_splits):
+    G = nx.DiGraph()
+    center_node = 0
+    for i in range(1, num_splits + 1):
+        G.add_edge(center_node, i)
+        G.add_edge(i, num_splits + 1)
+    center_node = num_splits + 1
+    for i in range(center_node + 1, center_node + num_splits + 1):
+        G.add_edge(center_node, i)
+        G.add_edge(i, center_node + num_splits + 1)
+    center_node += (num_splits + 1)
+    #add cycle
+    G.add_edge(center_node, center_node + 1)
+    G.add_edge(center_node + 1, 0)
+    G.add_edge(center_node + 1, center_node + 2)
+    G.add_edge(center_node + 2, center_node + 1)
+
+    return G
     
-    return J
-    
+def directed_wheel(circumference): #circumference is the number of nodes surrounding center node
+    G = nx.DiGraph()
+    #add more later
+    return G
+
 if __name__ == "__main__":
     # User inputs
     num_nodes = 10 # bound is 10^4 nodes, 10^5 edges
