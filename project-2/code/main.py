@@ -17,10 +17,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         filenames.append(sys.argv[1])
     else:
-        '''
-        #for sephia because her cwd is weird
-        os.chdir(os.path.dirname(os.path.abspath(__file__))) #changes current working directory to the one running the script
-        '''
         filenames = listdir("inputs")
 
     for filename in filenames:
