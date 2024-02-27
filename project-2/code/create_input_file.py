@@ -112,12 +112,11 @@ def split_merge(num_splits):
     for i in range(start_node, num_splits + start_node):
         G.add_edge(0,i)
     
+    merge_node = num_splits
     while num_splits != 1:
         for i in range (start_node, num_splits + start_node):
-            if i % 2 == 0:
-                merge_node = num_splits + i - 1
-            else:
-                merge_node = num_splits + i
+            if i % 2 != 0:
+                merge_node += 1
             G.add_edge(i, merge_node)
         start_node = num_splits + start_node
         num_splits = int(num_splits / 2)
