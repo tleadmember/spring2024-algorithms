@@ -47,10 +47,10 @@ def write_graph_to_file(G):
                 file.write("\n")
 
 def combine_graphs(G, H, weaklyConnect):
-    if G.number_of_nodes == 0:
+    if G.number_of_nodes() == 0:
         return H
     
-    if H.number_of_nodes == 0:
+    if H.number_of_nodes() == 0:
         return G
     
     if not weaklyConnect:
