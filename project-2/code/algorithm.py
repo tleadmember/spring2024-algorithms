@@ -41,7 +41,9 @@ def algorithm(G):
             
         sccsToProcess.append(subgraph)
 
-    sccMaxTime = maxTime / len(sccsToProcess)
+    if len(sccsToProcess) > 0:
+        sccMaxTime = maxTime / len(sccsToProcess)
+        
     for subgraph in sccsToProcess:
         print("scc " + str(sccsProcessed + 1) + ", nodes: " + str(subgraph.number_of_nodes()) + ", edges: " + str(subgraph.number_of_edges()) + ", initial maxTime: " + str(sccMaxTime))
         sys.stdout.flush()
