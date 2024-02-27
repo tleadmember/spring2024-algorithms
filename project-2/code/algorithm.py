@@ -2,22 +2,38 @@ import networkx as nx
 from collections import defaultdict
 import random
 import math
+from timeit import default_timer as timer
+import signal
+import subprocess
 
 RANDOM_FLAG = False
 
 def algorithm(G):
+    maxTime = 60.0 # 2 minutes per input max, this would end up being about 60 seconds per each random algorithm
     thresholdNodes = 0 # tbd
     thresholdEdges = 0
     
-    sccs = (G.subgraph(c) for c in nx.strongly_connected_components(G))
+    sccs = list((G.subgraph(c) for c in nx.strongly_connected_components(G)))
     listNodes = []
     
+    sccMaxTime = maxTime / len(sccs)
+    sccsProcessed = 0
     for subgraph in sccs:
+        sccStartTime = timer()
+
+        # sccs of 1 node don't count for the tmie
         if len(subgraph.nodes()) < 2:
+            sccsProcessed += 1
+            if sccsProcessed is not len(sccs):
+                sccMaxTime = maxTime / (len(sccs) - sccsProcessed)
             continue
 
+        # complete and almost complete subgraphs don't count towards the time
         if subgraph.number_of_edges() == subgraph.number_of_nodes() * (subgraph.number_of_nodes() - 1):
             listNodes += list(subgraph)[1:] # delete everything but one node
+            sccsProcessed += 1
+            if sccsProcessed is not len(sccs):
+                sccMaxTime = maxTime / (len(sccs) - sccsProcessed)
             continue
 
         # if the graph is a complete graph missing exactly one edge
@@ -27,6 +43,9 @@ def algorithm(G):
                 if subgraph.out_degree(n) + subgraph.in_degree(n) == 2 * (subgraph.number_of_nodes() - 1):
                     listNodes.append(n)
             
+            sccsProcessed += 1
+            if sccsProcessed is not len(sccs):
+                sccMaxTime = maxTime / (len(sccs) - sccsProcessed)
             continue
 
         H = G.subgraph(list(G))
@@ -35,18 +54,46 @@ def algorithm(G):
         # Do all the algorithms, and compare them to find the best one. 
         listListNodes = []
 
-        # Do algorithm random 100 times (will we win the lottery???)
-        for i in range(0, 1000):
-            # make a copy of c each time an algorithm is run
+        startTime = timer()
+        count = 0
+        # Do algorithm random for maxTime seconds or 1000 times (will we win the lottery???)
+        while timer() - startTime < sccMaxTime and count < 1000:
             c = nx.DiGraph(H.subgraph(subgraph))
             tmp = []
             algorithmRandom(c, tmp)
             listListNodes.append(tmp)
+            count += count
 
         tmp = []
         c = nx.DiGraph(H.subgraph(subgraph))
         untangleScc(c, tmp)
         listListNodes.append(tmp)
+
+        # Let the slow algorithm run for maxTime before timing it out (arg this is too annoying, windows why do you suck)
+        # tmp = []
+        # c = nx.DiGraph(H.subgraph(subgraph))
+        # timeout = False
+        
+        # try:
+        #     r = subprocess.run(algorithmSlow(c, tmp), timeout=maxTime)
+        # except subprocess.TimeoutExpired as e:
+        #     print("algorithm slow timed out")
+        #     timeout = True
+
+        # if not timeout:
+        #     listListNodes.append(tmp)
+
+        # signal.signal(signal.SIGABRT, timeout_handler)
+        # signal.alarm(maxTime)
+        # try:
+        #     tmp = []
+        #     c = nx.DiGraph(H.subgraph(subgraph))
+        #     algorithmSlow(c, tmp)
+        #     listListNodes.append(tmp)
+        # except Exception as ex:
+        #     pass
+        # finally:
+        #     signal.alarm(0)
 
         # if below the threshold then do the slow algorithm
         if thresholdNodes >= c.number_of_nodes() or thresholdEdges >= c.number_of_edges():
@@ -58,9 +105,21 @@ def algorithm(G):
         minimumListNodes = min(listListNodes, key = len)
         tmp = []
         c = nx.DiGraph(H.subgraph(subgraph))
-        listNodes.extend(algorithmRandomWithStartingPoint(c, tmp, minimumListNodes))
+        startTime = timer()
+        listNodes.extend(algorithmRandomWithStartingPoint(c, tmp, minimumListNodes, startTime, sccMaxTime))
+
+        # get allowed time remaining
+        maxTime = maxTime - (timer() - sccStartTime)
+        # divide it among remaining sccs
+        sccsProcessed += 1
+        if sccsProcessed is not len(sccs):
+            sccMaxTime = maxTime / (len(sccs) - sccsProcessed)
 
     return listNodes
+
+def timeout_handler(num, stack):
+    print("algorithmSlow timed out")
+    raise Exception("FUBAR")
 
 def untangleScc(c, listNodes):    
     maxDegreeNode = None
@@ -101,12 +160,13 @@ def algorithmRandom(c, listNodes):
         listNodes.append(node)
     return listNodes
 
-def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, count = 0):
+def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count = 0):
     if len(startingPoint) == 1:
         listNodes = startingPoint
         return listNodes
     
-    if count == 100:
+    # run 500 times or until max time
+    if count == 500 or timer() - startTime >= maxTime:
         listNodes = startingPoint
         return listNodes
     
@@ -131,9 +191,9 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, count = 0):
             break
     
     if len(newStartingPoint) == len(startingPoint) - 2:
-        listNodes = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, count + 1)
+        listNodes = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
     else:
-        listNodes = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, count + 1)
+        listNodes = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
 
     return listNodes
 
