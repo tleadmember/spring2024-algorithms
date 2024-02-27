@@ -43,7 +43,7 @@ def algorithm(G):
 
     sccMaxTime = maxTime / len(sccsToProcess)
     for subgraph in sccsToProcess:
-        print("scc " + str(sccsProcessed + 1) + ", nodes: " + str(subgraph.number_of_nodes()) + ", edges: " + str(subgraph.number_of_edges()))
+        print("scc " + str(sccsProcessed + 1) + ", nodes: " + str(subgraph.number_of_nodes()) + ", edges: " + str(subgraph.number_of_edges()) + ", initial maxTime: " + str(sccMaxTime))
         sccStartTime = timer()
 
         # H = G.subgraph(list(G))
