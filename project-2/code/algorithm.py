@@ -43,7 +43,7 @@ def algorithm(G):
 
     if len(sccsToProcess) > 0:
         sccMaxTime = maxTime / len(sccsToProcess)
-        
+
     for subgraph in sccsToProcess:
         print("scc " + str(sccsProcessed + 1) + ", nodes: " + str(subgraph.number_of_nodes()) + ", edges: " + str(subgraph.number_of_edges()) + ", initial maxTime: " + str(sccMaxTime))
         sys.stdout.flush()
@@ -58,22 +58,33 @@ def algorithm(G):
         startTime = timer()
         count = 0
         # Do algorithm random for maxTime seconds or 1000 times (will we win the lottery???)
-        while timer() - startTime < sccMaxTime and count < 1000:
-            c = nx.DiGraph(G.subgraph(subgraph))
-            tmp = []
-            algorithmRandom(c, tmp)
-            listListNodes.append(tmp)
-            count += count
+        # while timer() - startTime < sccMaxTime and count < 1000:
+        #     sys.stdout.flush()
+        #     c = nx.DiGraph(G.subgraph(subgraph))
+        #     tmp = []
+        #     algorithmRandom(c, tmp)
+        #     listListNodes.append(tmp)
+        #     count += count
 
+        print("done with initial random")
+        sys.stdout.flush()
         tmp = []
         c = nx.DiGraph(G.subgraph(subgraph))
-        if thresholdNodesUntangleScc >= c.number_of_nodes() and thresholdEdges >= c.number_of_edges():
+        if thresholdNodesUntangleScc >= c.number_of_nodes() and thresholdEdgesUntangleScc >= c.number_of_edges():
+            print("untangle scc is used")
+            sys.stdout.flush()
             untangleScc(c, tmp)
             listListNodes.append(tmp)
+            print("done with untangle scc")
+            sys.stdout.flush()
         
         tmp = []
         c = nx.DiGraph(G.subgraph(subgraph))
+        print("starting old algorithm")
+        sys.stdout.flush()
         old_algorithm(c, tmp)
+        print("done with old algorithm")
+        sys.stdout.flush()
 
         listListNodes.append(tmp)
 
@@ -116,7 +127,11 @@ def algorithm(G):
         tmp = []
         c = nx.DiGraph(G.subgraph(subgraph))
         startTime = timer()
+        print("starting random with starting point")
+        sys.stdout.flush()
         listNodes.extend(algorithmRandomWithStartingPoint(c, tmp, minimumListNodes, startTime, sccMaxTime))
+        print("done with random with starting point")
+        sys.stdout.flush()
 
         # get allowed time remaining
         maxTime = maxTime - (timer() - sccStartTime)
