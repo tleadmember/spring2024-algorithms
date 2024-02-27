@@ -197,7 +197,7 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
     # print("elapsed time:", timer() - startTime)
     # print("max time:", maxTime)
     sys.stdout.flush()
-    if count == 1000 or (timer() - startTime) >= maxTime:
+    if count == 900 or (timer() - startTime) >= maxTime:
         listNodes = startingPoint
         return listNodes
     
