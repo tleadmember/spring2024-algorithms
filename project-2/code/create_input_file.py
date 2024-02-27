@@ -15,8 +15,6 @@ def write_graph_to_file(G):
     print("Writing graph to file " + filename + " with " + str(G.number_of_edges()) + " edges and " + str(G.number_of_nodes()) + " nodes")
     sys.stdout.flush()
     # Translate networkx graph into input file format
-    maxNumNodes = 10000
-    maxNumEdges = 100000
 
     if G.number_of_nodes() > maxNumNodes:
         print(Fore.RED + "WARNING, SADNESS: GENERATED INPUT EXCEEDED THE MAXIMUM NUMBER OF NODES WITH [" + G.number_of_nodes() + "] NODES")
@@ -64,8 +62,7 @@ def combine_graphs(G, H, weaklyConnect):
 
 def generate_graph():
     # random networkx stuffs
-    G = combine_graphs(nx.to_directed(nx.bipartite.random_graph(50, 50, 0.5)), nx.hexagonal_lattice_graph(5, 6, True, create_using=nx.DiGraph), False)
-    G = combine_graphs(G, nx.to_directed(nx.ladder_graph(20)), True)
+    G = combine_graphs(nx.to_directed(nx.ladder_graph(20)), nx.hexagonal_lattice_graph(5, 6, True, create_using=nx.DiGraph), False)
     G = combine_graphs(G, nx.to_directed(nx.turan_graph(100, 5)), False)
     G = combine_graphs(G, nx.to_directed(nx.full_rary_tree(3, 100)), True)
     G = combine_graphs(G, nx.to_directed(nx.wheel_graph(43)), True)
@@ -89,6 +86,9 @@ def generate_graph():
     G = combine_graphs(G, split_merge_split_merge(8), True)
     G = combine_graphs(G, directed_wheel(20), True)
     G = combine_graphs(G, tutte_inspired(), True)
+
+    # fill the rest with random crap
+    G = combine_graphs(G, nx.to_directed(nx.bipartite.random_graph(maxNumGeneratedNodes - G.number_of_nodes(), maxNumGeneratedEdges - G.number_of_edges(), 0.5)), False)
 
     return G
 
@@ -164,15 +164,19 @@ def directed_wheel(circumference): #circumference is the number of nodes surroun
     return G
 
 def tutte_inspired():
-    G = graph_input.load_graph(filename, False)
+    G = graph_input.load_graph("inputs/inputBill.txt", False)
     return G
 
 
 if __name__ == "__main__":
     # User inputs
     num_nodes = 10 # bound is 10^4 nodes, 10^5 edges
+    maxNumNodes = 10000
+    maxNumEdges = 100000
+    maxNumGeneratedNodes = 5000
+    maxNumGeneratedEdges = 50000
     debug = False
-    filename = "inputs/testing.txt"
+    filename = "inputs/finalinput.txt"
 
     # Use networkx to design your input graph (CAN BE MODIFIED)
     G = generate_graph()
