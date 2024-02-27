@@ -9,7 +9,7 @@ from timeit import default_timer as timer
 
 
 if __name__ == "__main__":
-    debug = False
+    debug = True
 
     totalStart = timer()
     msg = "Time elapsed: {} seconds."
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         filenames.append(sys.argv[1])
     else:
-        filenames = listdir("inputs")
+        filenames = listdir("testing")
 
     for filename in filenames:
         start = timer()

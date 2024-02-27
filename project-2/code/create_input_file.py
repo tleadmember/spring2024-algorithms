@@ -64,6 +64,8 @@ def combine_graphs(G, H, weaklyConnect):
 
 def generate_graph():
     # random networkx stuffs
+    G = nx.DiGraph()
+    '''
     G = combine_graphs(nx.to_directed(nx.bipartite.random_graph(50, 50, 0.5)), nx.hexagonal_lattice_graph(5, 6, True, create_using=nx.DiGraph), False)
     G = combine_graphs(G, nx.to_directed(nx.ladder_graph(20)), True)
     G = combine_graphs(G, nx.to_directed(nx.turan_graph(100, 5)), False)
@@ -82,13 +84,13 @@ def generate_graph():
     # random stuff not networkx
     G = combine_graphs(G, nx.to_directed(nx.dense_gnm_random_graph(40, 200)), False)
     line_with_random_back_edges(20, 0.5)
-
+    '''
     # determined stuff
     G = combine_graphs(G, split_merge(8), True)
-    G = combine_graphs(G, nx.reverse(split_merge(8)), True) #reverse edge direction of previous graph
-    G = combine_graphs(G, split_merge_split_merge(8), True)
-    G = combine_graphs(G, directed_wheel(20), True)
-    G = combine_graphs(G, tutte_inspired(), True)
+    #G = combine_graphs(G, nx.reverse(split_merge(8)), True) #reverse edge direction of previous graph
+    #G = combine_graphs(G, split_merge_split_merge(8), True)
+    #G = combine_graphs(G, directed_wheel(20), True)
+    #G = combine_graphs(G, tutte_inspired(), True)
 
     return G
 
@@ -112,12 +114,11 @@ def split_merge(num_splits):
     for i in range(start_node, num_splits + start_node):
         G.add_edge(0,i)
     
+    merge_node = num_splits
     while num_splits != 1:
         for i in range (start_node, num_splits + start_node):
-            if i % 2 == 0:
-                merge_node = num_splits + i - 1
-            else:
-                merge_node = num_splits + i
+            if i % 2 != 0:
+                merge_node += 1
             G.add_edge(i, merge_node)
         start_node = num_splits + start_node
         num_splits = int(num_splits / 2)
@@ -129,6 +130,7 @@ def split_merge(num_splits):
     G.add_edge(curr_node + 1, curr_node + 2)
     G.add_edge(curr_node + 2, curr_node + 1)
 
+    print(G.edges)
     return G
 
 def split_merge_split_merge(num_splits):
@@ -172,7 +174,7 @@ if __name__ == "__main__":
     # User inputs
     num_nodes = 10 # bound is 10^4 nodes, 10^5 edges
     debug = False
-    filename = "inputs/testing.txt"
+    filename = "inputs/testing2.txt"
 
     # Use networkx to design your input graph (CAN BE MODIFIED)
     G = generate_graph()
