@@ -10,7 +10,7 @@ import sys
 RANDOM_FLAG = False
 
 def algorithm(G):
-    maxTime = 60.0 # 2 minutes per input max, this would end up being about 60 seconds per each random algorithm
+    maxTime = 120.0 # 4 minutes per input max, this would end up being about 120 seconds per each random algorithm
     thresholdNodes = 0 # tbd
     thresholdEdges = 0
     thresholdNodesUntangleScc = 10000
@@ -63,7 +63,7 @@ def algorithm(G):
 
         tmp = []
         c = nx.DiGraph(G.subgraph(subgraph))
-        print("scc", sccsProcessed + 1, ", nodes:", c.number_of_nodes(), ", edges:", c.number_of_edges() )
+        print("scc " + str(sccsProcessed + 1) + ", nodes: " + str(c.number_of_nodes()) + ", edges: " + str(c.number_of_edges()))
         sys.stdout.flush()
         if thresholdNodesUntangleScc >= c.number_of_nodes() and thresholdEdges >= c.number_of_edges():
             untangleScc(c, tmp)
