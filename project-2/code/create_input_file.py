@@ -17,11 +17,11 @@ def write_graph_to_file(G):
     # Translate networkx graph into input file format
 
     if G.number_of_nodes() > maxNumNodes:
-        print(Fore.RED + "WARNING, SADNESS: GENERATED INPUT EXCEEDED THE MAXIMUM NUMBER OF NODES WITH [" + G.number_of_nodes() + "] NODES")
+        print(Fore.RED + "WARNING, SADNESS: GENERATED INPUT EXCEEDED THE MAXIMUM NUMBER OF NODES WITH [" + str(G.number_of_nodes()) + "] NODES")
         sys.stdout.flush()
         
     if G.number_of_edges() > maxNumEdges:
-        print(Fore.RED + "WARNING, SADNESS: GENERATED INPUT EXCEEDED THE MAXIMUM NUMBER OF EDGES WITH [" + G.number_of_nodes() + "] EDGES")
+        print(Fore.RED + "WARNING, SADNESS: GENERATED INPUT EXCEEDED THE MAXIMUM NUMBER OF EDGES WITH [" + str(G.number_of_edges()) + "] EDGES")
         sys.stdout.flush()
 
     listsPrereqs = [[] for _ in range(G.number_of_nodes())]
@@ -75,6 +75,7 @@ def generate_graph():
     G = combine_graphs(G, nx.to_directed(nx.powerlaw_cluster_graph(100, 2, 0.5)), False)
     G = combine_graphs(G, nx.to_directed(nx.duplication_divergence_graph(100, 0.5)), False)
     G = combine_graphs(G, nx.DiGraph(nx.random_k_out_graph(100, 4, 0.5, False)), True)
+    G = combine_graphs(G, nx.to_directed(nx.bipartite.random_graph(100, 2, 0.5)), False)
 
     # random stuff not networkx
     G = combine_graphs(G, nx.to_directed(nx.dense_gnm_random_graph(40, 200)), False)
@@ -88,7 +89,7 @@ def generate_graph():
     G = combine_graphs(G, tutte_inspired(), True)
 
     # fill the rest with random crap
-    G = combine_graphs(G, nx.to_directed(nx.bipartite.random_graph(maxNumGeneratedNodes - G.number_of_nodes(), maxNumGeneratedEdges - G.number_of_edges(), 0.5)), False)
+    G = combine_graphs(G, nx.gnm_random_graph(maxNumGeneratedNodes - G.number_of_nodes(), maxNumGeneratedEdges - G.number_of_edges(), directed = True), False)
 
     return G
 
@@ -172,8 +173,8 @@ if __name__ == "__main__":
     num_nodes = 10 # bound is 10^4 nodes, 10^5 edges
     maxNumNodes = 10000
     maxNumEdges = 100000
-    maxNumGeneratedNodes = 5000
-    maxNumGeneratedEdges = 50000
+    maxNumGeneratedNodes = 10000
+    maxNumGeneratedEdges = 100000
     debug = False
     filename = "inputs/finalinput.txt"
 
