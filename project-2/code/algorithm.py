@@ -229,30 +229,35 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
             d.remove_node(n)
             newStartingPoint.append(n)
 
-    # make sure they are at least still in the same strongly connected component
-    if not nx.has_path(d, n1, n2) or not nx.has_path(d, n2, n1):
-        listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
+    # if d is already a dag then you don't need either node to be removed
+    if nx.is_directed_acyclic_graph(d):
+        # print("already a dag, should improve by 2")
+        # IF THERE IS ALREADY NO CYCLE YOU DON'T NEED TO REMOVE EITHER NODE! OMG
+        listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
         return listNodes
+
+    # make sure they are at least still in the same strongly connected component
+    # if not nx.has_path(d, n1, n2) or not nx.has_path(d, n2, n1):
+    #     print("would be no path")
+        # listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
+        # return listNodes
 
     nodes = list(d.nodes())
     for i in range(0, 500):
         e = d.copy()
-        try:
-            cycle = nx.find_cycle(e)
-            cycle = [*cycle]
-            n = random.choice(random.choice(cycle))
-            e.remove_node(n)
-            if nx.is_directed_acyclic_graph(e):
-                newStartingPoint.append(n)
-                break
-        except:
-            # IF THERE IS ALREADY NO CYCLE YOU DON'T NEED TO REMOVE EITHER NODE! OMG
-            listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
-            return listNodes
+        cycle = nx.find_cycle(e)
+        cycle = [*cycle]
+        n = random.choice(random.choice(cycle))
+        e.remove_node(n)
+        if nx.is_directed_acyclic_graph(e):
+            newStartingPoint.append(n)
+            break
     
     if len(newStartingPoint) == len(startingPoint) - 2:
+        # print("couldn't find improvement")
         listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
     else:
+        # print("did find improvement by 1")
         listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
 
     return listNodes
@@ -268,8 +273,8 @@ def forceImprove(c, listNodes, startingPoint):
             newStartingPoint = []
 
             # make sure they are at least still in the same strongly connected component
-            if not nx.has_path(d, n1, n2) or not nx.has_path(d, n2, n1):
-                continue
+            # if not nx.has_path(d, n1, n2) or not nx.has_path(d, n2, n1):
+            #     continue
             
             for n in startingPoint:
                 if n != n1 and n != n2:
@@ -282,6 +287,7 @@ def forceImprove(c, listNodes, startingPoint):
                 if nx.is_directed_acyclic_graph(e):
                     newStartingPoint.append(n)
                     listNodes[:] = newStartingPoint
+                    print("force improve found improvement")
                     return
                 
     listNodes[:] = startingPoint
