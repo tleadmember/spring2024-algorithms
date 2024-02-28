@@ -48,6 +48,7 @@ def algorithm(G):
         print("scc " + str(sccsProcessed + 1) + ", nodes: " + str(subgraph.number_of_nodes()) + ", edges: " + str(subgraph.number_of_edges()) + ", initial maxTime: " + str(sccMaxTime))
         sys.stdout.flush()
         sccStartTime = timer()
+        print("scc nodes:", subgraph.nodes())
 
         # H = G.subgraph(list(G))
         # H = H.copy() # create subgraph copy of G to modify
@@ -129,7 +130,8 @@ def algorithm(G):
         startTime = timer()
         print("starting random with starting point")
         sys.stdout.flush()
-        listNodes.extend(algorithmRandomWithStartingPoint(c, tmp, minimumListNodes, startTime, sccMaxTime))
+        huh = algorithmRandomWithStartingPoint(c, tmp, minimumListNodes, startTime, sccMaxTime)
+        listNodes.extend(huh)
         print("done with random with starting point")
         sys.stdout.flush()
 
@@ -205,17 +207,15 @@ def algorithmRandom(c, listNodes):
     return listNodes
 
 def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count = 0):
-    if len(startingPoint) == 1:
-        listNodes = startingPoint
+    if len(startingPoint) <= 1:
+        # python literally wtf
+        listNodes[:] = startingPoint
         return listNodes
     
     # run 1000 times or until max time
-    # print("count:", count)
-    # print("elapsed time:", timer() - startTime)
-    # print("max time:", maxTime)
     sys.stdout.flush()
     if count == 900 or (timer() - startTime) >= maxTime:
-        listNodes = startingPoint
+        listNodes[:] = startingPoint
         return listNodes
     
     newStartingPoint = []
@@ -239,9 +239,9 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
             break
     
     if len(newStartingPoint) == len(startingPoint) - 2:
-        listNodes = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
+        listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
     else:
-        listNodes = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
+        listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
 
     return listNodes
 
@@ -265,10 +265,10 @@ def forceImprove(c, listNodes, startingPoint):
                 e.remove_node(n)
                 if nx.is_directed_acyclic_graph(e):
                     newStartingPoint.append(n)
-                    listNodes = newStartingPoint
+                    listNodes[:] = newStartingPoint
                     return
                 
-    listNodes = startingPoint
+    listNodes[:] = startingPoint
 
 def algorithmSlow(c, listNodes):
     while not nx.is_directed_acyclic_graph(c):
