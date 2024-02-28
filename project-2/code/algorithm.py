@@ -137,7 +137,7 @@ def algorithm(G):
         maxTime = maxTime - (timer() - sccStartTime)
         # divide it among remaining sccs
         sccsProcessed += 1
-        if sccsProcessed is not len(sccsToProcess):
+        if sccsProcessed - len(sccsToProcess) is not 0:
             sccMaxTime = maxTime / (len(sccsToProcess) - sccsProcessed)
 
     return listNodes
