@@ -6,7 +6,7 @@ from colorama import Fore
 from timeit import default_timer as timer
 import networkx as nx
 
-def improve_output(G, removedCourses):
+def improve_output(G, removedCourses, forceImprove, forceImproveCount):
     sccs = list((G.subgraph(c) for c in nx.strongly_connected_components(G)))
     listNodes = []
     sccsProcessed = 0
@@ -52,7 +52,8 @@ def improve_output(G, removedCourses):
         if forceImprove:
             print("Force improving the output")
             sys.stdout.flush()
-            algorithm.forceImprove(c, tmp, removedNodesInScc)
+            for i in range(0, forceImproveCount):
+                algorithm.forceImprove(c, tmp, removedNodesInScc)
         else:
             print("Randomly improving the output")
             algorithm.algorithmRandomWithStartingPoint(c, tmp, removedNodesInScc, sccStartTime, timeSpentImproving)
@@ -77,7 +78,8 @@ if __name__ == "__main__":
     debug = False
     timeSpentImproving = 120 # spend 2 minutes attempting to improve the output
     # useful to check if we are already at the optimal output, but not so good for actually improving an output
-    forceImprove = False # Whether or not to force an improvement by 1
+    forceImprove = True # Whether or not to force an improvement by 1
+    forceImproveCount = 3 # how many times to do a force improve
 
     filename = ""
     if len(sys.argv) > 1:
@@ -105,7 +107,7 @@ if __name__ == "__main__":
         print(Fore.RED + "WARNING, SADNESS: INPUT OUTPUT WAS NOT VALID FOR [" + filename + "]")
         sys.stdout.flush()
 
-    listNodes = improve_output(G, removedCourses)
+    listNodes = improve_output(G, removedCourses, forceImprove, forceImproveCount)
 
     if len(removedCourses) > len(listNodes):
         print("HOOORAYYYY!!! We've improved the output by " + str(len(removedCourses) - len(listNodes)) + " nodes!!!")
