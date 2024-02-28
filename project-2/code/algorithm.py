@@ -245,6 +245,29 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
 
     return listNodes
 
+# definitely slow. USE SPARINGLY! Only will improve an output by 1. Useful for checking if our output is optimal, but otherwise don't use this.
+def forceImprove(c, listNodes, startingPoint):
+    # literally try each combination of 2 nodes and see if you can replace it with one of the nodes in the scc
+    for i in range(0, len(startingPoint) - 1):
+        for j in range(i + 1, len(startingPoint)):
+            n1 = i
+            n2 = j
+            d = c.copy()
+            newStartingPoint = []
+
+            for n in startingPoint:
+                if n != n1 and n != n2:
+                    d.remove_node(n)
+                    newStartingPoint.append(n)
+
+            for n in d.nodes():
+                e = d.copy()
+                e.remove_node(n)
+                if nx.is_directed_acyclic_graph(e):
+                    newStartingPoint.append(n)
+                    listNodes = newStartingPoint
+                    return
+
 def algorithmSlow(c, listNodes):
     while not nx.is_directed_acyclic_graph(c):
         cycles = nx.simple_cycles(c, length_bound=c.number_of_nodes())
@@ -277,8 +300,9 @@ def delete_common(c, listNodes, cyclesLst):
         delete_common(c, listNodes, cyclesLst2) # recurse
 
 def create_output(G, filename):
-    removedNodes = algorithm(G)
+    write_output(algorithm(G), filename)
 
+def write_output(removedNodes, filename):
     with open(filename, "w") as file:
         file.write(str(len(removedNodes)))
         file.write("\n")
