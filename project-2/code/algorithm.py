@@ -210,13 +210,13 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
     if len(startingPoint) <= 1:
         # python literally wtf
         listNodes[:] = startingPoint
-        return listNodes
+        return
     
     # run 1000 times or until max time
     sys.stdout.flush()
     if count == 900 or (timer() - startTime) >= maxTime:
         listNodes[:] = startingPoint
-        return listNodes
+        return
     
     newStartingPoint = []
     randomNodes = random.sample(startingPoint, k = 2)
@@ -232,22 +232,22 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
     # if d is already a dag then you don't need either node to be removed
     if nx.is_directed_acyclic_graph(d):
         # IF THERE IS ALREADY NO CYCLE YOU DON'T NEED TO REMOVE EITHER NODE! OMG
-        listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
-        return listNodes
+        algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
+        return
 
     sccs = list((d.subgraph(g) for g in nx.strongly_connected_components(d)))
     for scc in sccs:
         # if the scc n1 is in is already directed acyclic then n1 is not necessary
         if scc.has_node(n1) and nx.is_directed_acyclic_graph(scc):
             newStartingPoint.append(n2)
-            listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
-            return listNodes
+            algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
+            return
         
         # if the scc n2 is in is already directed acyclic then n2 is not necessary
         if scc.has_node(n2) and nx.is_directed_acyclic_graph(scc):
             newStartingPoint.append(n1)
-            listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
-            return listNodes
+            algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
+            return
         
     # at this point, we can make sure they are in the same strongly connected component
     # because we've handled all the cases where there is an improvement and they're not in the same scc
@@ -255,8 +255,8 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
     # that do not contain the other node
     # and thus there's no single node that can satisfy the purpose of both these nodes
     if not nx.has_path(d, n1, n2) or not nx.has_path(d, n2, n1):
-        listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
-        return listNodes
+        algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
+        return
 
     nodes = list(d.nodes())
     for i in range(0, 500):
@@ -270,11 +270,9 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
             break
     
     if len(newStartingPoint) == len(startingPoint) - 2:
-        listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
+        algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
     else:
-        listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
-
-    return listNodes
+        algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
 
 # definitely slow. USE SPARINGLY! Only will improve an output by 1. Useful for checking if our output is optimal, but otherwise don't use this.
 def forceImprove(c, listNodes, startingPoint):
