@@ -74,7 +74,7 @@ if __name__ == "__main__":
     debug = False
     timeSpentImproving = 120 # spend 2 minutes attempting to improve the output
     # useful to check if we are already at the optimal output, but not so good for actually improving an output
-    forceImprove = False # Whether or not to force an improvement by 1
+    forceImprove = True # Whether or not to force an improvement by 1
 
     filename = ""
     if len(sys.argv) > 1:
@@ -106,6 +106,9 @@ if __name__ == "__main__":
 
     if len(removedCourses) > len(listNodes):
         print("HOOORAYYYY!!! We've improved the output by " + str(len(removedCourses) - len(listNodes)) + " nodes!!!")
+
+    if len(removedCourses) == len(listNodes) and forceImprove:
+        print("Force improve was unable to improve the output. Output is optimal.")
 
     algorithm.write_output(listNodes, "outputs/" + filename + "_outputimproved")
     print("Validating the output...")
