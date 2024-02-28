@@ -231,16 +231,32 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
 
     # if d is already a dag then you don't need either node to be removed
     if nx.is_directed_acyclic_graph(d):
-        # print("already a dag, should improve by 2")
         # IF THERE IS ALREADY NO CYCLE YOU DON'T NEED TO REMOVE EITHER NODE! OMG
         listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
         return listNodes
 
-    # make sure they are at least still in the same strongly connected component
-    # if not nx.has_path(d, n1, n2) or not nx.has_path(d, n2, n1):
-    #     print("would be no path")
-        # listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
-        # return listNodes
+    sccs = list((d.subgraph(g) for g in nx.strongly_connected_components(d)))
+    for scc in sccs:
+        # if the scc n1 is in is already directed acyclic then n1 is not necessary
+        if scc.has_node(n1) and nx.is_directed_acyclic_graph(scc):
+            newStartingPoint.append(n2)
+            listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
+            return listNodes
+        
+        # if the scc n2 is in is already directed acyclic then n2 is not necessary
+        if scc.has_node(n2) and nx.is_directed_acyclic_graph(scc):
+            newStartingPoint.append(n1)
+            listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
+            return listNodes
+        
+    # at this point, we can make sure they are in the same strongly connected component
+    # because we've handled all the cases where there is an improvement and they're not in the same scc
+    # the logic here is if they are in separate strongly connected components, then they are elimating completely separate cycles
+    # that do not contain the other node
+    # and thus there's no single node that can satisfy the purpose of both these nodes
+    if not nx.has_path(d, n1, n2) or not nx.has_path(d, n2, n1):
+        listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
+        return listNodes
 
     nodes = list(d.nodes())
     for i in range(0, 500):
@@ -254,10 +270,8 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
             break
     
     if len(newStartingPoint) == len(startingPoint) - 2:
-        # print("couldn't find improvement")
         listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
     else:
-        # print("did find improvement by 1")
         listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
 
     return listNodes
@@ -272,9 +286,33 @@ def forceImprove(c, listNodes, startingPoint):
             d = c.copy()
             newStartingPoint = []
 
-            # make sure they are at least still in the same strongly connected component
-            # if not nx.has_path(d, n1, n2) or not nx.has_path(d, n2, n1):
-            #     continue
+            # if d is already a dag then you don't need either node to be removed
+            if nx.is_directed_acyclic_graph(d):
+                # IF THERE IS ALREADY NO CYCLE YOU DON'T NEED TO REMOVE EITHER NODE! OMG
+                listNodes[:] = newStartingPoint
+                return
+            
+            sccs = list((d.subgraph(g) for g in nx.strongly_connected_components(d)))
+            for scc in sccs:
+                # if the scc n1 is in is already directed acyclic then n1 is not necessary
+                if scc.has_node(n1) and nx.is_directed_acyclic_graph(scc):
+                    newStartingPoint.append(n2)
+                    listNodes[:] = newStartingPoint
+                    return
+                
+                # if the scc n2 is in is already directed acyclic then n2 is not necessary
+                if scc.has_node(n2) and nx.is_directed_acyclic_graph(scc):
+                    newStartingPoint.append(n1)
+                    listNodes[:] = newStartingPoint
+                    return
+                
+            # at this point, we can make sure they are in the same strongly connected component
+            # because we've handled all the cases where there is an improvement and they're not in the same scc
+            # the logic here is if they are in separate strongly connected components, then they are elimating completely separate cycles
+            # that do not contain the other node
+            # and thus there's no single node that can satisfy the purpose of both these nodes
+            if not nx.has_path(d, n1, n2) or not nx.has_path(d, n2, n1):
+                continue
             
             for n in startingPoint:
                 if n != n1 and n != n2:
@@ -287,7 +325,6 @@ def forceImprove(c, listNodes, startingPoint):
                 if nx.is_directed_acyclic_graph(e):
                     newStartingPoint.append(n)
                     listNodes[:] = newStartingPoint
-                    print("force improve found improvement")
                     return
                 
     listNodes[:] = startingPoint
