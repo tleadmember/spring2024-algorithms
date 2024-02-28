@@ -14,7 +14,7 @@ def algorithm(G):
     thresholdNodes = 0 # tbd
     thresholdEdges = 0
     thresholdNodesUntangleScc = 10000
-    thresholdEdgesUntangleScc = 30000
+    thresholdEdgesUntangleScc = 10000
     
     sccs = list((G.subgraph(c) for c in nx.strongly_connected_components(G)))
     listNodes = []
@@ -137,7 +137,7 @@ def algorithm(G):
         maxTime = maxTime - (timer() - sccStartTime)
         # divide it among remaining sccs
         sccsProcessed += 1
-        if sccsProcessed is not len(sccsToProcess):
+        if sccsProcessed - len(sccsToProcess) != 0:
             sccMaxTime = maxTime / (len(sccsToProcess) - sccsProcessed)
 
     return listNodes
