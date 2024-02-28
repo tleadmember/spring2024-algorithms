@@ -229,6 +229,11 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
             d.remove_node(n)
             newStartingPoint.append(n)
 
+    # make sure they are at least still in the same strongly connected component
+    if not nx.has_path(d, n1, n2) or not nx.has_path(d, n2, n1):
+        listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
+        return listNodes
+
     nodes = list(d.nodes())
     for i in range(0, 500):
         e = d.copy()
@@ -262,6 +267,10 @@ def forceImprove(c, listNodes, startingPoint):
             d = c.copy()
             newStartingPoint = []
 
+            # make sure they are at least still in the same strongly connected component
+            if not nx.has_path(d, n1, n2) or not nx.has_path(d, n2, n1):
+                continue
+            
             for n in startingPoint:
                 if n != n1 and n != n2:
                     d.remove_node(n)
