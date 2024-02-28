@@ -114,7 +114,7 @@ def improveFile(filename):
 
 if __name__ == "__main__":
     debug = False
-    timeSpentImproving = 120 # spend 2 minutes attempting to improve the output
+    timeSpentImproving = 300 # spend 2 minutes attempting to improve the output
     # useful to check if we are already at the optimal output, but not so good for actually improving an output
     forceImprove = False # Whether or not to force an improvement by 1
     forceImproveCount = 1 # how many times to do a force improve

@@ -232,11 +232,18 @@ def algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, max
     nodes = list(d.nodes())
     for i in range(0, 500):
         e = d.copy()
-        n = random.choice(nodes)
-        e.remove_node(n)
-        if nx.is_directed_acyclic_graph(e):
-            newStartingPoint.append(n)
-            break
+        try:
+            cycle = nx.find_cycle(e)
+            cycle = [*cycle]
+            n = random.choice(random.choice(cycle))
+            e.remove_node(n)
+            if nx.is_directed_acyclic_graph(e):
+                newStartingPoint.append(n)
+                break
+        except:
+            # IF THERE IS ALREADY NO CYCLE YOU DON'T NEED TO REMOVE EITHER NODE! OMG
+            listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, newStartingPoint, startTime, maxTime, count + 1)
+            return listNodes
     
     if len(newStartingPoint) == len(startingPoint) - 2:
         listNodes[:] = algorithmRandomWithStartingPoint(c, listNodes, startingPoint, startTime, maxTime, count + 1)
