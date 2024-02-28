@@ -8,7 +8,7 @@ import networkx as nx
 from os import listdir
 import os
 
-def improve_output(G, removedCourses, forceImprove, forceImproveCount):
+def improve_output(G, removedCourses, forceImprove, forceImproveCount, timeSpentImproving):
     sccs = list((G.subgraph(c) for c in nx.strongly_connected_components(G)))
     listNodes = []
     sccsProcessed = 0
@@ -100,7 +100,7 @@ def improveFile(filename):
         print(Fore.RED + "WARNING, SADNESS: INPUT OUTPUT WAS NOT VALID FOR [" + filename + "]")
         sys.stdout.flush()
 
-    listNodes = improve_output(G, removedCourses, forceImprove, forceImproveCount)
+    listNodes = improve_output(G, removedCourses, forceImprove, forceImproveCount, timeSpentImproving)
 
     if len(removedCourses) > len(listNodes):
         print("HOOORAYYYY!!! We've improved the output by " + str(len(removedCourses) - len(listNodes)) + " nodes!!!")
