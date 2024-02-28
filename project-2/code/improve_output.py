@@ -63,7 +63,7 @@ def improve_output(G, removedCourses):
         formatted_msg = msg.format(timer() - sccStartTime)
         print(formatted_msg)
         sys.stdout.flush()
-        sccsToProcess += 1
+        sccsProcessed += 1
         if sccsProcessed - len(sccsToProcess) != 0:
             sccMaxTime = timeSpentImproving / (len(sccsToProcess) - sccsProcessed)
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     debug = False
     timeSpentImproving = 120 # spend 2 minutes attempting to improve the output
     # useful to check if we are already at the optimal output, but not so good for actually improving an output
-    forceImprove = True # Whether or not to force an improvement by 1
+    forceImprove = False # Whether or not to force an improvement by 1
 
     filename = ""
     if len(sys.argv) > 1:
