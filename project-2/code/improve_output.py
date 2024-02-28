@@ -5,6 +5,8 @@ import sys
 from colorama import Fore
 from timeit import default_timer as timer
 import networkx as nx
+from os import listdir
+import os
 
 def improve_output(G, removedCourses, forceImprove, forceImproveCount):
     sccs = list((G.subgraph(c) for c in nx.strongly_connected_components(G)))
@@ -75,20 +77,7 @@ def improve_output(G, removedCourses, forceImprove, forceImproveCount):
     sys.stdout.flush()
     return listNodes
 
-if __name__ == "__main__":
-    debug = False
-    timeSpentImproving = 120 # spend 2 minutes attempting to improve the output
-    # useful to check if we are already at the optimal output, but not so good for actually improving an output
-    forceImprove = False # Whether or not to force an improvement by 1
-    forceImproveCount = 10 # how many times to do a force improve
-
-    filename = ""
-    if len(sys.argv) > 1:
-        filename = sys.argv[1]
-    else:
-        print("Please enter a filename when running this file.")
-        exit()
-
+def improveFile(filename):
     print("Loading graph for [" + filename + "]")
     sys.stdout.flush()
     G = graph_input.load_graph("inputs/" + filename, debug)
@@ -122,3 +111,19 @@ if __name__ == "__main__":
     if not validator.validate_output(G, "outputs/" + filename + "_output", debug):
         print(Fore.RED + "WARNING, SADNESS: OUTPUT WAS NOT VALID FOR [" + filename + "]")
         sys.stdout.flush()
+
+if __name__ == "__main__":
+    debug = False
+    timeSpentImproving = 120 # spend 2 minutes attempting to improve the output
+    # useful to check if we are already at the optimal output, but not so good for actually improving an output
+    forceImprove = False # Whether or not to force an improvement by 1
+    forceImproveCount = 1 # how many times to do a force improve
+
+    filenames = []
+    if len(sys.argv) > 1:
+        filenames.append(sys.argv[1])
+    else:
+        filenames = listdir("inputs")
+
+    for filename in filenames:
+        improveFile(filename)
