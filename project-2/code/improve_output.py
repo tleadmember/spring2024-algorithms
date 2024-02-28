@@ -69,7 +69,7 @@ def improve_output(G, removedCourses, forceImprove, forceImproveCount):
         sys.stdout.flush()
         sccsProcessed += 1
         if sccsProcessed - len(sccsToProcess) != 0:
-            sccMaxTime = timeSpentImproving / (len(sccsToProcess) - sccsProcessed)
+            sccMaxTime = (timeSpentImproving - (timer() - sccStartTime)) / (len(sccsToProcess) - sccsProcessed)
 
     msg = "Total time elapsed: {} seconds."
     formatted_msg = msg.format(timer() - startTime)
@@ -114,7 +114,7 @@ def improveFile(filename):
 
 if __name__ == "__main__":
     debug = False
-    timeSpentImproving = 300 # spend 2 minutes attempting to improve the output
+    timeSpentImproving = 60 # spend 2 minutes attempting to improve the output
     # useful to check if we are already at the optimal output, but not so good for actually improving an output
     forceImprove = False # Whether or not to force an improvement by 1
     forceImproveCount = 1 # how many times to do a force improve
