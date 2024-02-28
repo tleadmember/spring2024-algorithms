@@ -79,8 +79,8 @@ if __name__ == "__main__":
     debug = False
     timeSpentImproving = 120 # spend 2 minutes attempting to improve the output
     # useful to check if we are already at the optimal output, but not so good for actually improving an output
-    forceImprove = True # Whether or not to force an improvement by 1
-    forceImproveCount = 3 # how many times to do a force improve
+    forceImprove = False # Whether or not to force an improvement by 1
+    forceImproveCount = 10 # how many times to do a force improve
 
     filename = ""
     if len(sys.argv) > 1:
@@ -116,9 +116,9 @@ if __name__ == "__main__":
     if len(removedCourses) == len(listNodes) and forceImprove:
         print("Force improve was unable to improve the output. Output is optimal.")
 
-    algorithm.write_output(listNodes, "outputs/" + filename + "_outputimproved")
+    algorithm.write_output(listNodes, "outputs/" + filename + "_output")
     print("Validating the output...")
     sys.stdout.flush()
-    if not validator.validate_output(G, "outputs/" + filename + "_outputimproved", debug):
+    if not validator.validate_output(G, "outputs/" + filename + "_output", debug):
         print(Fore.RED + "WARNING, SADNESS: OUTPUT WAS NOT VALID FOR [" + filename + "]")
         sys.stdout.flush()
