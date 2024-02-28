@@ -52,8 +52,9 @@ def improve_output(G, removedCourses, forceImprove, forceImproveCount):
         if forceImprove:
             print("Force improving the output")
             sys.stdout.flush()
-            for i in range(0, forceImproveCount):
-                algorithm.forceImprove(c, tmp, removedNodesInScc)
+            algorithm.forceImprove(c, tmp, removedNodesInScc)
+            for i in range(1, forceImproveCount):
+                algorithm.forceImprove(c, tmp, tmp)
         else:
             print("Randomly improving the output")
             algorithm.algorithmRandomWithStartingPoint(c, tmp, removedNodesInScc, sccStartTime, timeSpentImproving)

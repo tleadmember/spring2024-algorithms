@@ -266,7 +266,6 @@ def forceImprove(c, listNodes, startingPoint):
                 if nx.is_directed_acyclic_graph(e):
                     newStartingPoint.append(n)
                     listNodes[:] = newStartingPoint
-                    print("replacing " + str(i) + " and " + str(j) + " with " + str(n))
                     return
                 
     listNodes[:] = startingPoint
