@@ -48,7 +48,6 @@ def algorithm(G):
         print("scc " + str(sccsProcessed + 1) + ", nodes: " + str(subgraph.number_of_nodes()) + ", edges: " + str(subgraph.number_of_edges()) + ", initial maxTime: " + str(sccMaxTime))
         sys.stdout.flush()
         sccStartTime = timer()
-        print("scc nodes:", subgraph.nodes())
 
         # H = G.subgraph(list(G))
         # H = H.copy() # create subgraph copy of G to modify
