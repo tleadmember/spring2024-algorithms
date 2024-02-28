@@ -267,6 +267,8 @@ def forceImprove(c, listNodes, startingPoint):
                     newStartingPoint.append(n)
                     listNodes = newStartingPoint
                     return
+                
+    listNodes = startingPoint
 
 def algorithmSlow(c, listNodes):
     while not nx.is_directed_acyclic_graph(c):
