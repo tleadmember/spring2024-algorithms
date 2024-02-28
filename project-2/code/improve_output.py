@@ -63,6 +63,9 @@ def improve_output(G, removedCourses):
         formatted_msg = msg.format(timer() - sccStartTime)
         print(formatted_msg)
         sys.stdout.flush()
+        sccsToProcess += 1
+        if sccsProcessed - len(sccsToProcess) != 0:
+            sccMaxTime = timeSpentImproving / (len(sccsToProcess) - sccsProcessed)
 
     msg = "Total time elapsed: {} seconds."
     formatted_msg = msg.format(timer() - startTime)
