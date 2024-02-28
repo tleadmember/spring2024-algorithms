@@ -250,8 +250,8 @@ def forceImprove(c, listNodes, startingPoint):
     # literally try each combination of 2 nodes and see if you can replace it with one of the nodes in the scc
     for i in range(0, len(startingPoint) - 1):
         for j in range(i + 1, len(startingPoint)):
-            n1 = i
-            n2 = j
+            n1 = startingPoint[i]
+            n2 = startingPoint[j]
             d = c.copy()
             newStartingPoint = []
 
@@ -266,6 +266,7 @@ def forceImprove(c, listNodes, startingPoint):
                 if nx.is_directed_acyclic_graph(e):
                     newStartingPoint.append(n)
                     listNodes[:] = newStartingPoint
+                    print("replacing " + str(i) + " and " + str(j) + " with " + str(n))
                     return
                 
     listNodes[:] = startingPoint
