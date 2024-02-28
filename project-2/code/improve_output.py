@@ -59,7 +59,7 @@ def improve_output(G, removedCourses, forceImprove, forceImproveCount):
                 algorithm.forceImprove(c, tmp, tmp)
         else:
             print("Randomly improving the output")
-            algorithm.algorithmRandomWithStartingPoint(c, tmp, removedNodesInScc, sccStartTime, timeSpentImproving)
+            algorithm.algorithmRandomWithStartingPoint(c, tmp, removedNodesInScc, sccStartTime, sccMaxTime)
         
         print("Finished improve.")
         listNodes.extend(tmp)
@@ -114,7 +114,7 @@ def improveFile(filename):
 
 if __name__ == "__main__":
     debug = False
-    timeSpentImproving = 60 # spend 2 minutes attempting to improve the output
+    timeSpentImproving = 120 # spend 2 minutes attempting to improve the output
     # useful to check if we are already at the optimal output, but not so good for actually improving an output
     forceImprove = False # Whether or not to force an improvement by 1
     forceImproveCount = 1 # how many times to do a force improve
