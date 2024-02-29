@@ -58,13 +58,13 @@ def algorithm(G):
         startTime = timer()
         count = 0
         # Do algorithm random for maxTime seconds or 1000 times (will we win the lottery???)
-        # while timer() - startTime < sccMaxTime and count < 1000:
-        #     sys.stdout.flush()
-        #     c = nx.DiGraph(G.subgraph(subgraph))
-        #     tmp = []
-        #     algorithmRandom(c, tmp)
-        #     listListNodes.append(tmp)
-        #     count += count
+        while timer() - startTime < sccMaxTime and count < 1000:
+            sys.stdout.flush()
+            c = nx.DiGraph(G.subgraph(subgraph))
+            tmp = []
+            algorithmRandom(c, tmp)
+            listListNodes.append(tmp)
+            count += count
 
         print("done with initial random")
         sys.stdout.flush()
