@@ -38,7 +38,7 @@ if __name__ == "__main__":
     for filename in filenames:
         print("Validating output for [" + filename + "]")
         sys.stdout.flush()
-        if validate_output_from_input(filename, "outputs/" + filename + "_output", debug):
+        if validate_output_from_input("inputs/" + filename, "outputs/" + filename + "_output", debug):
             print("Output was valid for [" + filename + "]")
         else:
             print(Fore.RED + "WARNING, SADNESS: OUTPUT WAS NOT VALID FOR [" + filename + "]")
