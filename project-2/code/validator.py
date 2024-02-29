@@ -1,5 +1,8 @@
 import networkx as nx
 import graph_input
+import sys
+from os import listdir
+from colorama import Fore
 
 def validate_output(G, output, debug):
     H = G.copy()
@@ -23,3 +26,20 @@ def validate_output(G, output, debug):
 
 def validate_output_from_input(input, output, debug):
     return validate_output(graph_input.load_graph(input, debug), output, debug)
+
+if __name__ == "__main__":
+    debug = False
+    filenames = []
+    if len(sys.argv) > 1:
+        filenames.append(sys.argv[1])
+    else:
+        filenames = listdir("inputs")
+
+    for filename in filenames:
+        print("Validating output for [" + filename + "]")
+        sys.stdout.flush()
+        if validate_output_from_input(filename, "outputs/" + filename + "_output", debug):
+            print("Output was valid for [" + filename + "]")
+        else:
+            print(Fore.RED + "WARNING, SADNESS: OUTPUT WAS NOT VALID FOR [" + filename + "]")
+            sys.stdout.flush()
