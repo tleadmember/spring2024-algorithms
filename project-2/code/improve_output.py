@@ -8,6 +8,23 @@ import networkx as nx
 from os import listdir
 import os
 
+def initial_improve(c, listNodes, startingPoint):
+    # get rid of all the nodes that are redundant, based on the other nodes removed
+    startingPointCopy = []
+    startingPointCopy[:] = startingPoint
+    for n in startingPointCopy:
+        d = c.copy()
+        potentialNewStartingPoint = []
+        for m in startingPoint:
+            if m != n:
+                d.remove_node(m)
+                potentialNewStartingPoint.append(m)
+
+        if nx.is_directed_acyclic_graph(d):
+            startingPoint[:] = potentialNewStartingPoint
+
+    listNodes[:] = startingPoint
+
 def improve_output(G, removedCourses, forceImprove, forceImproveCount, timeSpentImproving):
     sccs = list((G.subgraph(c) for c in nx.strongly_connected_components(G)))
     listNodes = []
@@ -42,6 +59,7 @@ def improve_output(G, removedCourses, forceImprove, forceImproveCount, timeSpent
         sys.stdout.flush()
         sccStartTime = timer()
 
+
         c = nx.DiGraph(G.subgraph(subgraph))
 
         # find the removed nodes actually in this subgraph
@@ -49,6 +67,18 @@ def improve_output(G, removedCourses, forceImprove, forceImproveCount, timeSpent
         for n in removedCourses:
             if c.has_node(int(n)):
                 removedNodesInScc.append(int(n))
+
+        if initialImprove:
+            initialLen = len(removedNodesInScc)
+            print("Running initial improve...")
+            sys.stdout.flush()
+            initial_improve(c, removedNodesInScc, removedNodesInScc)
+            if len(removedNodesInScc) < initialLen:
+                print("Initial improve improved the output by " + str(initialLen - len(removedNodesInScc)) + " nodes!")
+                sys.stdout.flush()
+            else:
+                print("Initial improve was unable to improve the output.")
+                sys.stdout.flush()
 
         tmp = []
         if forceImprove:
@@ -117,10 +147,11 @@ def improveFile(filename):
 
 if __name__ == "__main__":
     debug = False
-    timeSpentImproving = 120 # spend 2 minutes attempting to improve the output
+    timeSpentImproving = 10 # spend 2 minutes attempting to improve the output
     # useful to check if we are already at the optimal output, but not so good for actually improving an output
     forceImprove = False # Whether or not to force an improvement by 1
     forceImproveCount = 1 # how many times to do a force improve
+    initialImprove = True
 
     filenames = []
     if len(sys.argv) > 1:
