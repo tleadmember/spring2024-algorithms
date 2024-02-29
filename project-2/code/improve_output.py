@@ -147,15 +147,20 @@ def improveFile(filename):
 
 if __name__ == "__main__":
     debug = False
-    timeSpentImproving = 10 # spend 2 minutes attempting to improve the output
+    timeSpentImproving = 900 # spend 2 minutes attempting to improve the output
     # useful to check if we are already at the optimal output, but not so good for actually improving an output
-    forceImprove = False # Whether or not to force an improvement by 1
+    forceImprove = True # Whether or not to force an improvement by 1
     forceImproveCount = 1 # how many times to do a force improve
-    initialImprove = True
+    initialImprove = False
 
     filenames = []
     if len(sys.argv) > 1:
-        filenames.append(sys.argv[1])
+        try: 
+            index = int(sys.argv[1])
+            filenames = listdir("inputs" + str(index))
+            initialImprove = bool(int(sys.argv[2]))
+        except:
+            filenames.append(sys.argv[1])
     else:
         filenames = listdir("inputs")
 
