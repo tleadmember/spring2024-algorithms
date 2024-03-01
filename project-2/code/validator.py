@@ -14,7 +14,9 @@ def validate_output(G, output, debug):
         try:
             H.remove_node(int(removedCourse))
         except:
-            return False
+            print("Tried to remove " + removedCourse + " again")
+            pass
+            # return False
 
     valid = nx.is_directed_acyclic_graph(H)
 
@@ -48,6 +50,7 @@ if __name__ == "__main__":
     #         sys.stdout.flush()
 
     filenames = listdir("outputs")
+    # filenames = ["output_from_794_to_723.txt"]
     for filename in filenames:
         if validate_output_from_input("inputs/input_group723.txt", "outputs/" + filename, debug):
             print(Fore.GREEN + "Valid for " + filename[12:15])

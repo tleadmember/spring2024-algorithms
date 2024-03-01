@@ -7,6 +7,8 @@ def load_graph(filename, debug):
         courses = file.readlines()
 
     G = nx.DiGraph()
+    for i in range(0, int(nodes)):
+        G.add_node(i)
 
     for i in range(len(courses)):
         course = courses[i].strip().split()
