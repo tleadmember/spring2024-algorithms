@@ -9,8 +9,8 @@ with open(sys.argv[1], 'r') as my_file:
     input = my_file.readline().strip()
     segments_list = list(map(int, input.split()))
     
-# """ Start timing """
-# start = timer()
+""" Start timing """
+start = timer()
 
 """ Prefix sum """
 pf_sum_list = [0]*(n+1)
@@ -48,8 +48,8 @@ def T(i,j):
 """ Output """
 print( T(1, n) )
 
-# """ End timing """
-# end = timer()
-# msg = "Time elapsed: {} ms."
-# formatted_msg = msg.format((end-start)*1000)
-# print(formatted_msg)
+""" End timing """
+end = timer()
+msg = "Time elapsed: {} ms."
+formatted_msg = msg.format((end-start)*1000)
+print(formatted_msg)
