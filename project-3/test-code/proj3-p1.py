@@ -40,4 +40,4 @@ print( T(0, n-1) )
 end = timer()
 msg = "Time elapsed: {} ms."
 formatted_msg = msg.format((end-start)*1000)
-print(formatted_msg)
+# print(formatted_msg)
