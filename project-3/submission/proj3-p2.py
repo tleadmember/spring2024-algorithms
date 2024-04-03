@@ -14,7 +14,7 @@ start = timer()
 
 """ Prefix sum """
 pf_sum_list = [0]*(n+1)
-pf_sum_list[1] = segments_list[0] # pf_sum)list index starts from 1
+pf_sum_list[1] = segments_list[0] # pf_sum_list index starts from 1
 for i in range(2, n+1):
     pf_sum_list[i] = pf_sum_list[i-1] + segments_list[i-1]
 

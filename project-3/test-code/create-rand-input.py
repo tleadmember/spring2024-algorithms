@@ -3,8 +3,8 @@ import random
 """
 Generate random input files
 """
-for n in range(2, 21, 2):
-    x = n//2
+for n in range(200, 2001, 200):
+    x = n//200
     file_name = "sample--" + str(x) + ".txt"
     with open(file_name, "w") as file:
         file.write(str(n))
